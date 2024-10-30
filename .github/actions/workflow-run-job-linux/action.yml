@@ -38,6 +38,9 @@ inputs:
   host:
     description: "The host compiler to use when selecting a devcontainer."
     required: true
+  dist-token:
+    description: "The token used to authenticate with the sccache-dist build cluster."
+    required: false
 
 runs:
   using: "composite"
@@ -70,7 +73,8 @@ runs:
         RUNNER: "${{inputs.runner}}"
         # Dereferencing the command from an env var instead of a GHA input avoids issues with escaping
         # semicolons and other special characters (e.g. `-arch "60;70;80"`).
-        COMMAND: "${{inputs.command}}"
+        COMMAND: "${{inputs.command}} -v"
+        DIST_TOKEN: "${{inputs.dist-token}}"
         AWS_ACCESS_KEY_ID: "${{env.AWS_ACCESS_KEY_ID}}"
         AWS_SESSION_TOKEN: "${{env.AWS_SESSION_TOKEN}}"
         AWS_SECRET_ACCESS_KEY: "${{env.AWS_SECRET_ACCESS_KEY}}"
@@ -78,6 +82,7 @@ runs:
         echo "[host]      github.workspace: ${{github.workspace}}"
         echo "[container] GITHUB_WORKSPACE: ${GITHUB_WORKSPACE:-}"
         echo "[container]              PWD: $(pwd)"
+        echo "[container]             user: $(whoami) ($(id -u):$(id -g))"
 
         # Necessary because we're doing docker-outside-of-docker:
         # Make a symlink in the container that matches the host's ${{github.workspace}}, so that way `$(pwd)`
@@ -90,6 +95,7 @@ runs:
         #! /usr/bin/env bash
         set -eo pipefail
         echo -e "\e[1;34mRunning as '$(whoami)' user in $(pwd):\e[0m"
+        echo -e "\e[1;34mBuild cluster: $(sccache --dist-status)\e[0m"
         echo -e "\e[1;34m${COMMAND}\e[0m"
         eval "${COMMAND}" || exit_code=$?
         if [ ! -z "$exit_code" ]; then
@@ -108,15 +114,23 @@ runs:
         fi
         EOF
 
+        host_path() {
+          sed "s@/__w@$(dirname "$(dirname "${{github.workspace}}")")@" <<< "$1"
+        }
+
+        declare -a extra_launch_args=()
+
         chmod +x ci.sh
 
-        mkdir "$RUNNER_TEMP/.aws";
+        mkdir -p "$RUNNER_TEMP/.aws"
 
         cat <<EOF > "$RUNNER_TEMP/.aws/config"
         [default]
         bucket=rapids-sccache-devs
         region=us-east-2
         EOF
+
+        chmod 0664 "$RUNNER_TEMP/.aws/config"
 
         cat <<EOF > "$RUNNER_TEMP/.aws/credentials"
         [default]
@@ -126,26 +140,56 @@ runs:
         EOF
 
         chmod 0600 "$RUNNER_TEMP/.aws/credentials"
-        chmod 0664 "$RUNNER_TEMP/.aws/config"
 
-        declare -a gpu_request=()
+        if test "${DIST_TOKEN:+x}" = x; then
+          mkdir -p "$RUNNER_TEMP/.config/sccache"
+
+          mkdir -p "$RUNNER_TEMP/bin"
+
+          # Download newer sccache binary
+          curl -fsSL \
+            "https://github.com/trxcllnt/sccache/releases/download/v0.8.3-rapids.12/sccache-v0.8.3-rapids.12-$(uname -m)-unknown-linux-musl.tar.gz" \
+          | tar -C "$RUNNER_TEMP/bin" -zf - --wildcards --strip-components=1 -x '*/sccache'
+
+          chmod 0755 "$RUNNER_TEMP/bin/sccache"
+
+          OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
+          ARCH="$(dpkg --print-architecture | awk -F'-' '{print $NF}')"
+
+          cat <<EOF > "$RUNNER_TEMP/.config/sccache/config"
+        [cache.disk]
+        size = 0
+        [cache.disk.preprocessor_cache_mode]
+        use_preprocessor_cache_mode = false
+        [dist]
+        scheduler_url = "https://${ARCH}.${OS}.sccache-dist.gha-runners.nvidia.com"
+        [dist.auth]
+        type = "token"
+        # Token must have the "read:enterprise" scope
+        token = "${DIST_TOKEN}"
+        EOF
+
+          chmod 0664 "$RUNNER_TEMP/.config/sccache/config"
+
+          extra_launch_args+=(
+            --env "SCCACHE_NO_CACHE=true"
+            --volume "$(host_path "$RUNNER_TEMP")/.config:/root/.config:ro"
+            --volume "$(host_path "$RUNNER_TEMP")/bin/sccache:/usr/bin/sccache:ro"
+          )
+        fi
 
         # Explicitly pass which GPU to use if on a GPU runner
         if [[ "${RUNNER}" = *"-gpu-"* ]]; then
-          gpu_request+=(--gpus "device=${NVIDIA_VISIBLE_DEVICES}")
+          extra_launch_args+=(--gpus "device=${NVIDIA_VISIBLE_DEVICES}")
         fi
-
-        host_path() {
-          sed "s@/__w@$(dirname "$(dirname "${{github.workspace}}")")@" <<< "$1"
-        }
 
         # Launch this container using the host's docker daemon
         set -x
+
         ${{github.event.repository.name}}/.devcontainer/launch.sh \
           --docker \
           --cuda ${{inputs.cuda}} \
           --host ${{inputs.host}} \
-          "${gpu_request[@]}" \
           --env "CI=$CI" \
           --env "AWS_ROLE_ARN=" \
           --env "COMMAND=$COMMAND" \
@@ -159,9 +203,10 @@ runs:
           --env "GITHUB_WORKSPACE=$GITHUB_WORKSPACE" \
           --env "GITHUB_REPOSITORY=$GITHUB_REPOSITORY" \
           --env "GITHUB_STEP_SUMMARY=$GITHUB_STEP_SUMMARY" \
-          --volume "${{github.workspace}}/ci.sh:/ci.sh" \
+          --volume "${{github.workspace}}/ci.sh:/ci.sh:ro" \
           --volume "$(host_path "$RUNNER_TEMP")/.aws:/root/.aws" \
           --volume "$(dirname "$(dirname "${{github.workspace}}")"):/__w" \
+          "${extra_launch_args[@]}" \
           -- /ci.sh
 
     - name: Prepare job artifacts
