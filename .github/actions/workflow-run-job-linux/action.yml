@@ -99,7 +99,7 @@ runs:
         #! /usr/bin/env bash
         set -eo pipefail
         echo -e "\e[1;34mRunning as '$(whoami)' user in $(pwd):\e[0m"
-        echo -e "\e[1;34mBuild cluster: $(sccache --dist-status; echo "exit code: $?")\e[0m"
+        echo -e "\e[1;34mBuild cluster: $(sccache --dist-status | jq -cr '.SchedulerStatus[1]')\e[0m"
         echo -e "\e[1;34m${COMMAND}\e[0m"
         eval "${COMMAND}" || exit_code=$?
         if [ ! -z "$exit_code" ]; then
@@ -139,64 +139,85 @@ runs:
 
         chmod 0600 "$RUNNER_TEMP/.aws/credentials"
 
+        mkdir -p "$RUNNER_TEMP/.config/sccache"
+
+        # Configure the sccache client
+        cat <<EOF > "$RUNNER_TEMP/.config/sccache/config"
+        server_startup_timeout_ms = $((5 * 60 * 1000))
+        [cache.disk]
+        size = 0
+        [cache.disk.preprocessor_cache_mode]
+        use_preprocessor_cache_mode = false
+        EOF
+
+        chmod 0664 "$RUNNER_TEMP/.config/sccache/config"
+
         declare -a extra_launch_args=()
 
         OS="$(uname -s)"
         CPUS="$(nproc --all)"
         ARCH="$(dpkg --print-architecture)"
 
-        if test "$ARCH" = amd64 && test -n "${DIST_TOKEN:+x}"; then
+        # Temporary: don't use sccache-dist for clang-cuda until
+        # sccache packages up a correct toolchain for the server
+        not_clang_cuda="$(grep -q '\-cuda "clang' <<< "$COMMAND" || echo $?)"
+
+        if test -n "${not_clang_cuda:+x}" && test -n "${DIST_TOKEN:+x}"; then
+          # Verify GitHub API rate limits for our token
+          cat <<< "Authorization: Bearer ${DIST_TOKEN}" > "$RUNNER_TEMP/gh_api_header"
+          curl -L -H @"$RUNNER_TEMP/gh_api_header" "https://api.github.com/rate_limit"
+          rm "$RUNNER_TEMP/gh_api_header"
+
           mkdir -p "$RUNNER_TEMP/bin"
-          mkdir -p "$RUNNER_TEMP/.config/sccache"
 
           # Download newer sccache binary
           curl -fsSL \
-            "https://github.com/trxcllnt/sccache/releases/download/v0.8.3-rapids.14/sccache-v0.8.3-rapids.14-$(uname -m)-unknown-linux-musl.tar.gz" \
+            "https://github.com/trxcllnt/sccache/releases/download/v0.8.3-rapids.32/sccache-v0.8.3-rapids.32-$(uname -m)-unknown-linux-musl.tar.gz" \
           | tar -C "$RUNNER_TEMP/bin" -zf - --wildcards --strip-components=1 -x '*/sccache'
 
           # Configure sccache client to talk to the build cluster
-          cat <<EOF > "$RUNNER_TEMP/.config/sccache/config"
-        [cache.disk]
-        size = 0
-        [cache.disk.preprocessor_cache_mode]
-        use_preprocessor_cache_mode = false
+          cat <<EOF >> "$RUNNER_TEMP/.config/sccache/config"
         [dist]
-        scheduler_url = "https://${ARCH}.${OS,,}.sccache-dist.gha-runners.nvidia.com"
+        scheduler_url = "https://${ARCH}.${OS,,}.sccache.gha-runners.nvidia.com"
         [dist.auth]
         type = "token"
         token = "${DIST_TOKEN}"
         EOF
 
-          chmod 0664 "$RUNNER_TEMP/.config/sccache/config"
-
           extra_launch_args+=(
-            # Don't cache anything yet
-            --env "SCCACHE_NO_CACHE=1"
+            # Repopulate the cache
+            --env "SCCACHE_RECACHE=1"
 
-            # When we do cache, use a separate namespace
+            # Don't use the cache at all
+            # --env "SCCACHE_NO_CACHE=1"
+
+            # When we cache, use a separate namespace
             --env "SCCACHE_S3_KEY_PREFIX=cccl-sccache-dist-test"
 
-            # Compile device objects in parallel
-            --env "NVCC_APPEND_FLAGS=-t=100"
-
             # Over-subscribe -j to keep the build cluster busy
-            --env "PARALLEL_LEVEL=$((CPUS * 2))"
+            # --env "PARALLEL_LEVEL=$((CPUS * 2))"
 
-            # Retry failed builds 5 times before building locally
-            --env "SCCACHE_DIST_RETRY_LIMIT=5"
+            # Retry failed builds 1 time before building locally
+            --env "SCCACHE_DIST_RETRY_LIMIT=1"
 
             # Allow time for the build cluster to respond to requests
-            --env "SCCACHE_DIST_CONNECT_TIMEOUT=30"
-            --env "SCCACHE_DIST_REQUEST_TIMEOUT=1200"
+            --env "SCCACHE_DIST_CONNECT_TIMEOUT=15"
+            --env "SCCACHE_DIST_REQUEST_TIMEOUT=720"
 
             # Instruct sccache to write debug logs to a file we can upload
             --env "SCCACHE_SERVER_LOG=sccache=debug"
             --env "SCCACHE_ERROR_LOG=/home/coder/cccl/sccache.log"
 
             # Mount in sccache client config and updated binary
-            --volume "${{runner.temp}}/.config:/root/.config:ro"
             --volume "${{runner.temp}}/bin/sccache:/usr/bin/sccache:ro"
           )
+
+          if ! grep -q '11.1' <<< "${{inputs.cuda}}"; then
+            # Compile device objects in parallel
+            extra_launch_args+=(
+              --env "NVCC_APPEND_FLAGS=-t=3"
+            )
+          fi
         fi
 
         # Explicitly pass which GPU to use if on a GPU runner
@@ -226,6 +247,7 @@ runs:
           --env "GITHUB_STEP_SUMMARY=$GITHUB_STEP_SUMMARY" \
           --volume "${{runner.temp}}/ci.sh:/ci.sh:ro" \
           --volume "${{runner.temp}}/.aws:/root/.aws" \
+          --volume "${{runner.temp}}/.config:/root/.config:ro" \
           --volume "$(dirname "$(dirname "${{github.workspace}}")"):/__w" \
           "${extra_launch_args[@]}" \
           -- /ci.sh
