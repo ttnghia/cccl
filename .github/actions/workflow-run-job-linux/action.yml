@@ -73,7 +73,7 @@ runs:
         RUNNER: "${{inputs.runner}}"
         # Dereferencing the command from an env var instead of a GHA input avoids issues with escaping
         # semicolons and other special characters (e.g. `-arch "60;70;80"`).
-        COMMAND: "${{inputs.command}} -v"
+        COMMAND: "${{inputs.command}}"
         DIST_TOKEN: "${{inputs.dist-token}}"
         AWS_ACCESS_KEY_ID: "${{env.AWS_ACCESS_KEY_ID}}"
         AWS_SESSION_TOKEN: "${{env.AWS_SESSION_TOKEN}}"
@@ -173,7 +173,7 @@ runs:
           chmod 0664 "$RUNNER_TEMP/.config/sccache/config"
 
           extra_launch_args+=(
-            --env "PARALLEL_LEVEL=$((CPUS * 2))"
+            --env "PARALLEL_LEVEL=$((CPUS * 4))"
             --env "SCCACHE_NO_CACHE=true"
             --env "SCCACHE_S3_KEY_PREFIX=cccl-sccache-dist-test"
             --volume "$(host_path "$RUNNER_TEMP")/.config:/root/.config:ro"
@@ -221,10 +221,15 @@ runs:
 
         touch "$result_dir/success"
 
+        echo "repo: ${{github.workspace}}/${{github.event.repository.name}}"
+        echo "pwd: $(pwd)"
+        echo "dirs:"
+        find . -mindepth 1 -maxdepth 1 -type d
+
         # Finds a matching file in the repo directory and copies it to the results directory.
         find_and_copy() {
           filename="$1"
-          filepath="$(find ${{github.event.repository.name}} -name "${filename}" -print -quit)"
+          filepath="$(find "${{github.workspace}}/${{github.event.repository.name}}" -name "${filename}" -print -quit)"
           if [[ -z "$filepath" ]]; then
             echo "${filename} does not exist in repo directory."
             return 1
