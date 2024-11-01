@@ -82,7 +82,6 @@ runs:
         echo "[host]      github.workspace: ${{github.workspace}}"
         echo "[container] GITHUB_WORKSPACE: ${GITHUB_WORKSPACE:-}"
         echo "[container]              PWD: $(pwd)"
-        echo "[container]             user: $(whoami) ($(id -u):$(id -g))"
 
         # Necessary because we're doing docker-outside-of-docker:
         # Make a symlink in the container that matches the host's ${{github.workspace}}, so that way `$(pwd)`
@@ -90,6 +89,8 @@ runs:
         mkdir -p "$(dirname "${{github.workspace}}")"
         ln -s "$(pwd)" "${{github.workspace}}"
         cd "${{github.workspace}}"
+
+        echo "[container]          new PWD: $(pwd)"
 
         cat <<"EOF" > ci.sh
         #! /usr/bin/env bash
@@ -174,7 +175,8 @@ runs:
 
           extra_launch_args+=(
             --env "PARALLEL_LEVEL=$((CPUS * 4))"
-            --env "SCCACHE_NO_CACHE=true"
+            # --env "SCCACHE_RECACHE=1"
+            # --env "SCCACHE_NO_CACHE=1"
             --env "SCCACHE_S3_KEY_PREFIX=cccl-sccache-dist-test"
             --volume "$(host_path "$RUNNER_TEMP")/.config:/root/.config:ro"
             --volume "$(host_path "$RUNNER_TEMP")/bin/sccache:/usr/bin/sccache:ro"
@@ -221,15 +223,13 @@ runs:
 
         touch "$result_dir/success"
 
-        echo "repo: ${{github.workspace}}/${{github.event.repository.name}}"
-        echo "pwd: $(pwd)"
         echo "dirs:"
         find . -mindepth 1 -maxdepth 1 -type d
 
         # Finds a matching file in the repo directory and copies it to the results directory.
         find_and_copy() {
           filename="$1"
-          filepath="$(find "${{github.workspace}}/${{github.event.repository.name}}" -name "${filename}" -print -quit)"
+          filepath="$(find . -name "${filename}" -print -quit)"
           if [[ -z "$filepath" ]]; then
             echo "${filename} does not exist in repo directory."
             return 1

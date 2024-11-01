@@ -106,6 +106,8 @@ launch_docker() {
     local -;
     set -euo pipefail
 
+    set -x
+
     inline_vars() {
         cat - \
         `# inline local workspace folder` \
