@@ -153,6 +153,7 @@ runs:
 
           chmod 0755 "$RUNNER_TEMP/bin/sccache"
 
+          CPUS="$(nproc --all)"
           OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
           ARCH="$(dpkg --print-architecture | awk -F'-' '{print $NF}')"
 
@@ -172,7 +173,9 @@ runs:
           chmod 0664 "$RUNNER_TEMP/.config/sccache/config"
 
           extra_launch_args+=(
+            --env "PARALLEL_LEVEL=$((CPUS * 2))"
             --env "SCCACHE_NO_CACHE=true"
+            --env "SCCACHE_S3_KEY_PREFIX=cccl-sccache-dist-test"
             --volume "$(host_path "$RUNNER_TEMP")/.config:/root/.config:ro"
             --volume "$(host_path "$RUNNER_TEMP")/bin/sccache:/usr/bin/sccache:ro"
           )
