@@ -80,7 +80,9 @@ runs:
         AWS_SECRET_ACCESS_KEY: "${{env.AWS_SECRET_ACCESS_KEY}}"
       run: |
         echo "[host]      github.workspace: ${{github.workspace}}"
+        echo "[host]           runner.temp: ${{runner.temp}}"
         echo "[container] GITHUB_WORKSPACE: ${GITHUB_WORKSPACE:-}"
+        echo "[container]      RUNNER_TEMP: ${RUNNER_TEMP:-}"
         echo "[container]              PWD: $(pwd)"
 
         # Necessary because we're doing docker-outside-of-docker:
@@ -92,7 +94,7 @@ runs:
 
         echo "[container]          new PWD: $(pwd)"
 
-        cat <<"EOF" > ci.sh
+        cat <<"EOF" > "$RUNNER_TEMP/ci.sh"
         #! /usr/bin/env bash
         set -eo pipefail
         echo -e "\e[1;34mRunning as '$(whoami)' user in $(pwd):\e[0m"
@@ -115,13 +117,7 @@ runs:
         fi
         EOF
 
-        host_path() {
-          sed "s@/__w@$(dirname "$(dirname "${{github.workspace}}")")@" <<< "$1"
-        }
-
-        declare -a extra_launch_args=()
-
-        chmod +x ci.sh
+        chmod +x "$RUNNER_TEMP/ci.sh"
 
         mkdir -p "$RUNNER_TEMP/.aws"
 
@@ -141,6 +137,16 @@ runs:
         EOF
 
         chmod 0600 "$RUNNER_TEMP/.aws/credentials"
+
+        __w_HOST="$(dirname "$(dirname "${{github.workspace}}")")"
+
+        host_path() {
+          sed "s@/__w@$__w_HOST@" <<< "$1"
+        }
+
+        RUNNER_TEMP_HOST="$(host_path "$RUNNER_TEMP")"
+
+        declare -a extra_launch_args=()
 
         if test "${DIST_TOKEN:+x}" = x; then
           mkdir -p "$RUNNER_TEMP/.config/sccache"
@@ -174,12 +180,12 @@ runs:
           chmod 0664 "$RUNNER_TEMP/.config/sccache/config"
 
           extra_launch_args+=(
-            --env "PARALLEL_LEVEL=$((CPUS * 4))"
             # --env "SCCACHE_RECACHE=1"
             # --env "SCCACHE_NO_CACHE=1"
+            --env "PARALLEL_LEVEL=$((CPUS * 2))"
             --env "SCCACHE_S3_KEY_PREFIX=cccl-sccache-dist-test"
-            --volume "$(host_path "$RUNNER_TEMP")/.config:/root/.config:ro"
-            --volume "$(host_path "$RUNNER_TEMP")/bin/sccache:/usr/bin/sccache:ro"
+            --volume "$RUNNER_TEMP_HOST/.config:/root/.config:ro"
+            --volume "$RUNNER_TEMP_HOST/bin/sccache:/usr/bin/sccache:ro"
           )
         fi
 
@@ -208,9 +214,9 @@ runs:
           --env "GITHUB_WORKSPACE=$GITHUB_WORKSPACE" \
           --env "GITHUB_REPOSITORY=$GITHUB_REPOSITORY" \
           --env "GITHUB_STEP_SUMMARY=$GITHUB_STEP_SUMMARY" \
-          --volume "${{github.workspace}}/ci.sh:/ci.sh:ro" \
-          --volume "$(host_path "$RUNNER_TEMP")/.aws:/root/.aws" \
-          --volume "$(dirname "$(dirname "${{github.workspace}}")"):/__w" \
+          --volume "$RUNNER_TEMP_HOST/ci.sh:/ci.sh:ro" \
+          --volume "$RUNNER_TEMP_HOST/.aws:/root/.aws" \
+          --volume "$__w_HOST:/__w" \
           "${extra_launch_args[@]}" \
           -- /ci.sh
 
@@ -223,13 +229,10 @@ runs:
 
         touch "$result_dir/success"
 
-        echo "dirs:"
-        find . -mindepth 1 -maxdepth 1 -type d
-
         # Finds a matching file in the repo directory and copies it to the results directory.
         find_and_copy() {
           filename="$1"
-          filepath="$(find . -name "${filename}" -print -quit)"
+          filepath="$(find ${{github.event.repository.name}} -name "${filename}" -print -quit)"
           if [[ -z "$filepath" ]]; then
             echo "${filename} does not exist in repo directory."
             return 1
