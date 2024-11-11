@@ -189,10 +189,10 @@ struct AgentFind
 
     constexpr int NUMBER_OF_VECTORS = ITEMS_PER_THREAD / VECTOR_LOAD_LENGTH;
     //// vectorized loads begin
-    InputT* d_in_unqualified = const_cast<InputT*>(d_in) + tile_offset + (threadIdx.x * VECTOR_LOAD_LENGTH);
+    const InputT* d_in_unqualified = d_in + tile_offset + (threadIdx.x * VECTOR_LOAD_LENGTH);
 
     cub::CacheModifiedInputIterator<AgentFindPolicy::LOAD_MODIFIER, VectorT> d_vec_in(
-      reinterpret_cast<VectorT*>(d_in_unqualified));
+      reinterpret_cast<const VectorT*>(d_in_unqualified));
 
     InputT input_items[ITEMS_PER_THREAD];
     VectorT* vec_items = reinterpret_cast<VectorT*>(input_items);
