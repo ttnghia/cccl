@@ -128,9 +128,7 @@ print_environment_details() {
       CTEST_PARALLEL_LEVEL \
       CCCL_BUILD_INFIX \
       GLOBAL_CMAKE_OPTIONS \
-      TBB_ROOT \
-      SCCACHE_BUCKET \
-      SCCACHE_NO_CACHE
+      TBB_ROOT
 
   echo "Current commit is:"
   git log -1 --format=short || echo "Not a repository"
@@ -222,7 +220,7 @@ function build_preset() {
     source "./sccache_stats.sh" "start"
 
     pushd .. > /dev/null
-    run_command "$GROUP_NAME" cmake --build --preset=$PRESET ${VERBOSE:+-v}
+    run_command "$GROUP_NAME" cmake --build --preset=$PRESET -v
     status=$?
     popd > /dev/null
 
