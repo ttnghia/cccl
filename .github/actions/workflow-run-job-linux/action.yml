@@ -72,6 +72,7 @@ runs:
       env:
         CI: true
         RUNNER: "${{inputs.runner}}"
+        IMAGE: "${{inputs.image}}"
         # Dereferencing the command from an env var instead of a GHA input avoids issues with escaping
         # semicolons and other special characters (e.g. `-arch "60;70;80"`).
         COMMAND: "${{inputs.command}}"
@@ -237,6 +238,11 @@ runs:
         # Explicitly pass which GPU to use if on a GPU runner
         if [[ "${RUNNER}" = *"-gpu-"* ]]; then
           extra_launch_args+=(--gpus "device=${NVIDIA_VISIBLE_DEVICES}")
+        fi
+
+        # If the image contains "cudaXX.Yext"...
+        if [[ "${IMAGE}" =~ cuda[0-9.]+ext ]]; then
+          extra_launch_args+=(--cuda-ext)
         fi
 
         # Launch this container using the host's docker daemon
