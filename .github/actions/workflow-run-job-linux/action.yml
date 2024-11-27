@@ -210,7 +210,8 @@ runs:
             # --env "SCCACHE_NO_CACHE=1"
 
             # Over-subscribe -j to keep the build cluster busy
-            --env "PARALLEL_LEVEL=$((CPUS * 2))"
+            # --env "PARALLEL_LEVEL=$((CPUS * 2))"
+            --env "PARALLEL_LEVEL=64"
 
             # Retry failed builds 10 times before building locally
             --env "SCCACHE_DIST_RETRY_LIMIT=10"
