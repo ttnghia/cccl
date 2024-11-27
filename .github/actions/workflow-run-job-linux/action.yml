@@ -190,7 +190,7 @@ runs:
           # Download newer sccache binary
           mkdir -p "$RUNNER_TEMP/bin"
           curl -fsSL \
-            "https://github.com/trxcllnt/sccache/releases/download/v0.8.3-rapids.45/sccache-v0.8.3-rapids.45-$(uname -m)-unknown-linux-musl.tar.gz" \
+            "https://github.com/trxcllnt/sccache/releases/download/v0.8.3-rapids.49/sccache-v0.8.3-rapids.49-$(uname -m)-unknown-linux-musl.tar.gz" \
           | tar -C "$RUNNER_TEMP/bin" -zf - --wildcards --strip-components=1 -x '*/sccache'
 
           # Configure sccache client to talk to the build cluster
@@ -326,3 +326,4 @@ runs:
         name: jobs-${{inputs.id}}
         path: jobs
         compression-level: 0
+        include-hidden-files: true
