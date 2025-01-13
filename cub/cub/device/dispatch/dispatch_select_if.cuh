@@ -49,7 +49,6 @@
 #include <cub/device/dispatch/tuning/tuning_select_if.cuh>
 #include <cub/grid/grid_queue.cuh>
 #include <cub/thread/thread_operators.cuh>
-#include <cub/util_deprecated.cuh>
 #include <cub/util_device.cuh>
 #include <cub/util_math.cuh>
 #include <cub/util_vsmem.cuh>
@@ -841,37 +840,6 @@ struct DispatchSelectIf
 
     return CubDebug(PolicyHub::MaxPolicy::Invoke(ptx_version, dispatch));
   }
-
-#ifndef _CCCL_DOXYGEN_INVOKED // Do not document
-  CUB_DETAIL_RUNTIME_DEBUG_SYNC_IS_NOT_SUPPORTED
-  CUB_RUNTIME_FUNCTION _CCCL_FORCEINLINE static cudaError_t Dispatch(
-    void* d_temp_storage,
-    size_t& temp_storage_bytes,
-    InputIteratorT d_in,
-    FlagsInputIteratorT d_flags,
-    SelectedOutputIteratorT d_selected_out,
-    NumSelectedIteratorT d_num_selected_out,
-    SelectOpT select_op,
-    EqualityOpT equality_op,
-    OffsetT num_items,
-    cudaStream_t stream,
-    bool debug_synchronous)
-  {
-    CUB_DETAIL_RUNTIME_DEBUG_SYNC_USAGE_LOG
-
-    return Dispatch(
-      d_temp_storage,
-      temp_storage_bytes,
-      d_in,
-      d_flags,
-      d_selected_out,
-      d_num_selected_out,
-      select_op,
-      equality_op,
-      num_items,
-      stream);
-  }
-#endif // _CCCL_DOXYGEN_INVOKED
 };
 
 CUB_NAMESPACE_END
