@@ -101,24 +101,7 @@ runs:
         set -eo pipefail
         echo -e "\e[1;34mRunning as '$(whoami)' user in $(pwd):\e[0m"
         # Print current dist status to verify we're connected
-        echo -e "\e[1;34mBuild cluster:\n$(sccache --dist-status | jq -r -f <(cat <<"EOF"
-          .SchedulerStatus as [$x, $y] | [
-            ($y | {type: "scheduler", id: $x, servers: (.servers | length), cpus: .info.occupancy, util: ((.info.cpu_usage // 0) * 100 | round | . / 100 | tostring | . + "%"), jobs: (.jobs.fetched + .jobs.running), fetched: .jobs.fetched, running: .jobs.running, u_time: ($y.servers // {} | map(.u_time) | min | . // 0 | tostring | . + "s")}),
-            ($y.servers // {}
-              | to_entries
-              | sort_by(.key)
-              | map(
-                .key as $k
-                | .value
-                | {type: "server", id: .id, servers: 1, cpus: .info.occupancy, util: ((.info.cpu_usage // 0) * 100 | round | . / 100 | tostring | . + "%"), jobs: (.jobs.fetched + .jobs.running), fetched: .jobs.fetched, running: .jobs.running, u_time: ((.u_time // 0) | tostring | . + "s")}
-              )[]
-            )
-          ] as $rows
-          | ($rows[0] | keys_unsorted) as $cols
-          | ($rows | map(. as $row | $cols | map($row[.]))) as $rows
-          | $cols, $rows[] | @csv | gsub("\""; "")
-        EOF
-        ) | column -t -s, -R 1-7)\e[0m"
+        echo -e "\e[1;34mBuild cluster:\n$(./ci/sccache_dist_status.sh)\e[0m"
         echo -e "\e[1;34m${COMMAND}\e[0m"
         eval "${COMMAND}" || exit_code=$?
         if [ ! -z "$exit_code" ]; then
