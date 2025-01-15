@@ -18,6 +18,6 @@ sccache --dist-status | jq -r -f <(cat <<"EOF"
   ] as $rows
   | ($rows[0] | keys_unsorted) as $cols
   | ($rows | map(. as $row | $cols | map($row[.]))) as $rows
-  | $cols, $rows[] | @csv | gsub("\""; "")
+  | $cols, $rows[] | @csv
 EOF
 )
