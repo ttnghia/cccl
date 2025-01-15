@@ -20,4 +20,4 @@ sccache --dist-status | jq -r -f <(cat <<"EOF"
   | ($rows | map(. as $row | $cols | map($row[.]))) as $rows
   | $cols, $rows[] | @csv | gsub("\""; "")
 EOF
-) | column -t -s, -R 1-7
+)
