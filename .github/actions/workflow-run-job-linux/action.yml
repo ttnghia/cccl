@@ -185,18 +185,18 @@ runs:
           )
         fi
 
+        # Download new sccache binary
+        mkdir -p "$RUNNER_TEMP/bin"
+        curl -fsSL \
+          "https://github.com/trxcllnt/sccache/releases/download/v0.9.1-rapids.13/sccache-v0.9.1-rapids.13-$(uname -m)-unknown-linux-musl.tar.gz" \
+        | tar -C "$RUNNER_TEMP/bin" -zf - --wildcards --strip-components=1 -x '*/sccache'
+
         # If this is not a test job and not one of the excluded compilers, use the build cluster
         if test -n "${not_nvhpc:+x}" \
         && test -n "${not_oneapi:+x}" \
         && test -n "${not_test_job:+x}" \
         && test -n "${not_clang_cuda:+x}" \
         && test -n "${DIST_TOKEN:+x}"; then
-
-          # Download newer sccache binary
-          mkdir -p "$RUNNER_TEMP/bin"
-          curl -fsSL \
-            "https://github.com/trxcllnt/sccache/releases/download/v0.9.1-rapids.8/sccache-v0.9.1-rapids.8-$(uname -m)-unknown-linux-musl.tar.gz" \
-          | tar -C "$RUNNER_TEMP/bin" -zf - --wildcards --strip-components=1 -x '*/sccache'
 
           # Configure sccache client to talk to the build cluster
           cat <<EOF >> "$RUNNER_TEMP/.config/sccache/config"
