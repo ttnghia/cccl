@@ -167,10 +167,9 @@ runs:
         # Everything should be cached for test jobs.
         not_test_job="$(grep -q '"./ci/test_' <<< "$COMMAND" || echo $?)"
 
-        # Temporary: don't use sccache-dist for NVHPC, OneAPI, or clang-cuda
+        # Temporary: don't use sccache-dist for NVHPC or clang-cuda
         # until sccache packages up a correct toolchain for the server
         not_nvhpc="$(grep -q 'nvhpc' <<< "${{inputs.host}}" || echo $?)"
-        not_oneapi="$(grep -q 'oneapi' <<< "${{inputs.host}}" || echo $?)"
         not_clang_cuda="$(grep -q '\-cuda "clang' <<< "$COMMAND" || echo $?)"
 
         # If a test job, over-subscribe -j to download more cache objects at once
@@ -193,7 +192,6 @@ runs:
 
         # If this is not a test job and not one of the excluded compilers, use the build cluster
         if test -n "${not_nvhpc:+x}" \
-        && test -n "${not_oneapi:+x}" \
         && test -n "${not_test_job:+x}" \
         && test -n "${not_clang_cuda:+x}" \
         && test -n "${DIST_TOKEN:+x}"; then
@@ -212,10 +210,10 @@ runs:
             # --env "SCCACHE_RECACHE=1"
 
             # Uncomment to not use the cache at all
-            --env "SCCACHE_NO_CACHE=1"
+            # --env "SCCACHE_NO_CACHE=1"
 
             # Over-subscribe -j to keep the build cluster busy
-            # --env "PARALLEL_LEVEL=$((CPUS * 2))"
+            --env "PARALLEL_LEVEL=$((CPUS * 4))"
             # --env "PARALLEL_LEVEL=64"
 
             # Retry failed builds 1 time before building locally
