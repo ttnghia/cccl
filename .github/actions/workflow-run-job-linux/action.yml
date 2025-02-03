@@ -187,7 +187,7 @@ runs:
         # Download new sccache binary
         mkdir -p "$RUNNER_TEMP/bin"
         curl -fsSL \
-          "https://github.com/trxcllnt/sccache/releases/download/v0.9.1-rapids.14/sccache-v0.9.1-rapids.14-$(uname -m)-unknown-linux-musl.tar.gz" \
+          "https://github.com/trxcllnt/sccache/releases/download/v0.9.1-rapids.15/sccache-v0.9.1-rapids.15-$(uname -m)-unknown-linux-musl.tar.gz" \
         | tar -C "$RUNNER_TEMP/bin" -zf - --wildcards --strip-components=1 -x '*/sccache'
 
         # If this is not a test job and not one of the excluded compilers, use the build cluster
@@ -214,7 +214,7 @@ runs:
         [dist.net]
         connect_timeout = 10
         request_timeout = 1200
-        connection_pool = true
+        # connection_pool = true
         EOF
 
           extra_launch_args+=(
