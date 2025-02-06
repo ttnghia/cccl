@@ -204,7 +204,7 @@ runs:
         # Download new sccache binary
         mkdir -p "$RUNNER_TEMP/bin"
         curl -fsSL \
-          "https://github.com/trxcllnt/sccache/releases/download/v0.9.1-rapids.20/sccache-v0.9.1-rapids.20-$(uname -m)-unknown-linux-musl.tar.gz" \
+          "https://github.com/trxcllnt/sccache/releases/download/v0.9.1-rapids.21/sccache-v0.9.1-rapids.21-$(uname -m)-unknown-linux-musl.tar.gz" \
         | tar -C "$RUNNER_TEMP/bin" -zf - --wildcards --strip-components=1 -x '*/sccache'
 
         # If this is not a test job and not one of the excluded compilers, use the build cluster
@@ -236,8 +236,8 @@ runs:
 
           extra_launch_args+=(
             # Over-subscribe -j to keep the build cluster busy
-            --env "PARALLEL_LEVEL=$((CPUS * 4))"
-            # --env "PARALLEL_LEVEL=64"
+            # --env "PARALLEL_LEVEL=$((CPUS * 4))"
+            --env "PARALLEL_LEVEL=64"
 
             # Uncomment to repopulate the cache
             # --env "SCCACHE_RECACHE=1"
