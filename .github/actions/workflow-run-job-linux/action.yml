@@ -98,13 +98,14 @@ runs:
 
         cat <<"EOF" > "$RUNNER_TEMP/ci.sh"
         #! /usr/bin/env bash
-        set -eo pipefail
+        set -euo pipefail
         echo -e "\e[1;34mRunning as '$(whoami)' user in $(pwd):\e[0m"
         # Print current dist status to verify we're connected
         echo -e "\e[1;34mBuild cluster:\n$(./ci/sccache_dist_status.sh)\e[0m"
         echo -e "\e[1;34m${COMMAND}\e[0m"
-        eval "${COMMAND}" || exit_code=$?
-        if [ ! -z "$exit_code" ]; then
+        eval "${COMMAND}"
+        exit_code=$?
+        if [[ "$exit_code" -ne 0 ]]; then
           echo -e "::group::️❗ \e[1;31mInstructions to Reproduce CI Failure Locally\e[0m"
           echo "::error:: To replicate this failure locally, follow the steps below:"
           echo "1. Clone the repository, and navigate to the correct branch and commit:"
@@ -118,6 +119,22 @@ runs:
           echo "   - Continuous Integration (CI) Overview: https://github.com/NVIDIA/cccl/blob/main/ci-overview.md"
           exit $exit_code
         fi
+
+        # Copy any artifacts we want to preserve out of the container:
+        results_dir=/artifacts
+
+        # Finds a matching file in the repo directory and copies it to the results directory.
+        find_and_copy() {
+          filename="$1"
+          filepath="$(find . -name "${filename}" -print -quit)"
+          if [[ -z "$filepath" ]]; then
+            echo "${filename} does not exist in repo directory."
+            return 1
+          fi
+          cp -v "$filepath" "$results_dir"
+        }
+
+        find_and_copy "sccache_stats.json" || :
         EOF
 
         chmod +x "$RUNNER_TEMP/ci.sh"
@@ -317,11 +334,11 @@ runs:
         }
 
         # Ignore failures
-        find_and_copy "sccache.log" || true
-        find_and_copy "build/*/.ninja_log" || true
-        find_and_copy "build/*/build.ninja" || true
-        find_and_copy "build/*/rules.ninja" || true
-        find_and_copy "build/*/sccache_stats.json" || true
+        find_and_copy "sccache.log" || :
+        find_and_copy "build/*/.ninja_log" || :
+        find_and_copy "build/*/build.ninja" || :
+        find_and_copy "build/*/rules.ninja" || :
+        find_and_copy "build/*/sccache_stats.json" || :
 
         echo "::group::Job artifacts"
         tree "$result_dir"
