@@ -12,9 +12,11 @@ sccache --dist-status | jq -r -f <(cat <<"EOF"
     servers: ((.servers | length) // 1),
     cpus: .info.occupancy,
     util: ((.info.cpu_usage // 0) * 100 | round | . / 100 | tostring | . + "%"),
-    jobs: (.jobs.fetched + .jobs.running),
-    fetched: .jobs.fetched,
+    jobs: (.jobs.loading + .jobs.running),
+    loading: .jobs.loading,
     running: .jobs.running,
+    accepted: .jobs.accepted,
+    finished: .jobs.finished,
     u_time: ((.u_time // 0) | tostring | . + "s")
   };
 
