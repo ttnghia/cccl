@@ -212,6 +212,10 @@ struct bfloat16_t
   }
 };
 
+#ifdef __GNUC__
+#  pragma GCC diagnostic pop
+#endif
+
 /******************************************************************************
  * I/O stream overloads
  ******************************************************************************/
@@ -230,18 +234,17 @@ inline std::ostream& operator<<(std::ostream& out, const __nv_bfloat16& x)
 }
 
 /******************************************************************************
- * Traits overloads
+ * traits and limits
  ******************************************************************************/
 
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 template <>
 struct __is_extended_floating_point<bfloat16_t> : true_type
 {};
-
-#ifndef _CCCL_NO_VARIABLE_TEMPLATES
+#ifndef _CCCL_NO_INLINE_VARIABLES
 template <>
 _CCCL_INLINE_VAR constexpr bool __is_extended_floating_point_v<bfloat16_t> = true;
-#endif // _CCCL_NO_VARIABLE_TEMPLATES
+#endif // _CCCL_NO_INLINE_VARIABLES
 
 template <>
 class numeric_limits<bfloat16_t>
@@ -266,13 +269,13 @@ public:
 };
 _LIBCUDACXX_END_NAMESPACE_STD
 
-_CCCL_SUPPRESS_DEPRECATED_PUSH
 template <>
-struct CUB_NS_QUALIFIER::NumericTraits<bfloat16_t>
-    : CUB_NS_QUALIFIER::BaseTraits<FLOATING_POINT, unsigned short, bfloat16_t>
-{};
-_CCCL_SUPPRESS_DEPRECATED_POP
+struct CUB_NS_QUALIFIER::detail::unsigned_bits<bfloat16_t, void>
+{
+  using type = unsigned short;
+};
 
-#ifdef __GNUC__
-#  pragma GCC diagnostic pop
-#endif
+// template <>
+// struct CUB_NS_QUALIFIER::detail::NumericTraits<bfloat16_t>
+//     : CUB_NS_QUALIFIER::detail::BaseTraits<FLOATING_POINT, unsigned short, bfloat16_t>
+// {};

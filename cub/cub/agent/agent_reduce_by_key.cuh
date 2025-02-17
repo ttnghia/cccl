@@ -228,7 +228,7 @@ struct AgentReduceByKey
   // Whether or not the scan operation has a zero-valued identity value (true
   // if we're performing addition on a primitive type)
   static constexpr int HAS_IDENTITY_ZERO =
-    (::cuda::std::is_same_v<ReductionOpT, ::cuda::std::plus<>>) && (is_primitive<AccumT>::value);
+    (::cuda::std::is_same_v<ReductionOpT, ::cuda::std::plus<>>) && is_primitive<AccumT>::value;
 
   // Cache-modified Input iterator wrapper type (for applying cache modifier)
   // for keys Wrap the native input pointer with
