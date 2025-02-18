@@ -56,6 +56,7 @@ runs:
             [System.Environment]::SetEnvironmentVariable('AWS_ACCESS_KEY_ID','${{env.AWS_ACCESS_KEY_ID}}');
             [System.Environment]::SetEnvironmentVariable('AWS_SECRET_ACCESS_KEY','${{env.AWS_SECRET_ACCESS_KEY}}');
             [System.Environment]::SetEnvironmentVariable('AWS_SESSION_TOKEN','${{env.AWS_SESSION_TOKEN }}');
+            [System.Environment]::SetEnvironmentVariable('SCCACHE_RECACHE','1');
             [System.Environment]::SetEnvironmentVariable('SCCACHE_BUCKET','${{env.SCCACHE_BUCKET}}');
             [System.Environment]::SetEnvironmentVariable('SCCACHE_REGION','${{env.SCCACHE_REGION}}');
             [System.Environment]::SetEnvironmentVariable('SCCACHE_IDLE_TIMEOUT','${{env.SCCACHE_IDLE_TIMEOUT}}');
