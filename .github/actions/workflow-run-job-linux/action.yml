@@ -175,17 +175,8 @@ runs:
         CPUS="$(nproc --all)"
         ARCH="$(dpkg --print-architecture)"
 
-        ###
-        # Use the build cluster for build jobs.
-        # Everything should be cached for non-build jobs.
-        ###
-
-        if ! grep -q '"./ci/build_' <<< "$COMMAND"; then
-          # If not a build job, over-subscribe -j to download more cache objects at once
-          extra_launch_args+=(
-            --env "PARALLEL_LEVEL=$((CPUS * 2))"
-          )
-        elif test -n "${DIST_TOKEN+x}"; then
+        # Use the build cluster
+        if test -n "${DIST_TOKEN+x}"; then
 
           # Configure sccache client to talk to the build cluster
           cat <<EOF >> "$RUNNER_TEMP/.config/sccache/config"
@@ -199,12 +190,12 @@ runs:
         # Build cluster auth
         [dist.auth]
         type = "token"
-        token = "${DIST_TOKEN}"
+        token = "$DIST_TOKEN"
 
         # Build cluster network config
         [dist.net]
         connect_timeout = 10
-        request_timeout = 600
+        request_timeout = 720
         EOF
 
           extra_launch_args+=(
@@ -219,7 +210,7 @@ runs:
           # and we'll OOM if we try to compile too many at once.
           if ! grep -q '\-cuda "clang' <<< "$COMMAND"; then
             extra_launch_args+=(
-              --env "PARALLEL_LEVEL=$((CPUS * 16))"
+              --env "PARALLEL_LEVEL=$((CPUS * 16 > 128 ? 128 : CPUS * 16))"
             )
           fi
 
