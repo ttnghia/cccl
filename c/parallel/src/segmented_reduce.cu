@@ -18,7 +18,6 @@
 #include <string> // std::string
 #include <string_view> // std::string_view
 #include <type_traits> // std::is_same_v
-#include <utility> // std::move
 
 #include "kernels/iterators.h"
 #include "kernels/operators.h"
@@ -102,11 +101,13 @@ segmented_reduce_runtime_tuning_policy get_policy(int cc, cccl_type_info accumul
 
   auto [_, block_size, items_per_thread, vector_load_length] = find_tuning(cc, chain);
 
-  // Implement part of MemBoundScaling
-  items_per_thread =
-    ::cuda::std::max(1, ::cuda::std::min(items_per_thread * 4 / accumulator_type.size, items_per_thread * 2));
-  block_size =
-    ::cuda::std::min(block_size, (((1024 * 48) / (accumulator_type.size * items_per_thread)) + 31) / 32 * 32);
+  auto four_bytes_per_thread = items_per_thread * 4 / accumulator_type.size;
+  items_per_thread           = _CUDA_VSTD::min<decltype(items_per_thread)>(four_bytes_per_thread, items_per_thread * 2);
+  items_per_thread           = _CUDA_VSTD::min(1, items_per_thread);
+
+  auto work_per_sm    = cub::detail::max_smem_per_block / (accumulator_type.size * items_per_thread);
+  auto max_block_size = cuda::round_up(work_per_sm, 32);
+  block_size          = _CUDA_VSTD::min<decltype(block_size)>(block_size, max_block_size);
 
   return {block_size, items_per_thread, vector_load_length};
 }
@@ -239,11 +240,10 @@ struct segmented_reduce_kernel_source
     return build.segmented_reduce_kernel;
   }
 };
-
 } // namespace segmented_reduce
 
 CUresult cccl_device_segmented_reduce_build(
-  cccl_device_segmented_reduce_build_result_t* build,
+  cccl_device_segmented_reduce_build_result_t* build_ptr,
   cccl_iterator_t input_it,
   cccl_iterator_t output_it,
   cccl_iterator_t start_offset_it,
@@ -255,7 +255,7 @@ CUresult cccl_device_segmented_reduce_build(
   const char* cub_path,
   const char* thrust_path,
   const char* libcudacxx_path,
-  const char* ctk_path) noexcept
+  const char* ctk_path)
 {
   CUresult error = CUDA_SUCCESS;
 
@@ -361,14 +361,14 @@ struct device_segmented_reduce_policy {{
         .finalize_program(num_lto_args, lopts);
 
     // populate build struct members
-    cuLibraryLoadData(&build->library, result.data.get(), nullptr, nullptr, 0, nullptr, nullptr, 0);
+    cuLibraryLoadData(&build_ptr->library, result.data.get(), nullptr, nullptr, 0, nullptr, nullptr, 0);
     check(cuLibraryGetKernel(
-      &build->segmented_reduce_kernel, build->library, segmented_reduce_kernel_lowered_name.c_str()));
+      &build_ptr->segmented_reduce_kernel, build_ptr->library, segmented_reduce_kernel_lowered_name.c_str()));
 
-    build->cc               = cc;
-    build->cubin            = (void*) result.data.release();
-    build->cubin_size       = result.size;
-    build->accumulator_size = accum_t.size;
+    build_ptr->cc               = cc;
+    build_ptr->cubin            = (void*) result.data.release();
+    build_ptr->cubin_size       = result.size;
+    build_ptr->accumulator_size = accum_t.size;
   }
   catch (const std::exception& exc)
   {
@@ -387,12 +387,12 @@ CUresult cccl_device_segmented_reduce(
   size_t* temp_storage_bytes,
   cccl_iterator_t d_in,
   cccl_iterator_t d_out,
-  unsigned long long num_segments,
+  uint64_t num_segments,
   cccl_iterator_t start_offset,
   cccl_iterator_t end_offset,
   cccl_op_t op,
   cccl_value_t init,
-  CUstream stream) noexcept
+  CUstream stream)
 {
   bool pushed    = false;
   CUresult error = CUDA_SUCCESS;
@@ -447,18 +447,18 @@ CUresult cccl_device_segmented_reduce(
   return error;
 }
 
-CUresult cccl_device_segmented_reduce_cleanup(cccl_device_segmented_reduce_build_result_t* bld_ptr) noexcept
+CUresult cccl_device_segmented_reduce_cleanup(cccl_device_segmented_reduce_build_result_t* build_ptr)
 {
   try
   {
-    if (bld_ptr == nullptr)
+    if (build_ptr == nullptr)
     {
       return CUDA_ERROR_INVALID_VALUE;
     }
 
     // allocation behind cubin is owned by unique_ptr with delete[] deleter now
-    std::unique_ptr<char[]> cubin(reinterpret_cast<char*>(bld_ptr->cubin));
-    check(cuLibraryUnload(bld_ptr->library));
+    std::unique_ptr<char[]> cubin(reinterpret_cast<char*>(build_ptr->cubin));
+    check(cuLibraryUnload(build_ptr->library));
   }
   catch (const std::exception& exc)
   {

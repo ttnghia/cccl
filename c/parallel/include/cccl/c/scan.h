@@ -18,10 +18,11 @@
 
 #include <cccl/c/extern_c.h>
 #include <cccl/c/types.h>
+#include <stdint.h>
 
 CCCL_C_EXTERN_C_BEGIN
 
-struct cccl_device_scan_build_result_t
+typedef struct cccl_device_scan_build_result_t
 {
   int cc;
   void* cubin;
@@ -32,10 +33,10 @@ struct cccl_device_scan_build_result_t
   CUkernel scan_kernel;
   size_t description_bytes_per_tile;
   size_t payload_bytes_per_tile;
-};
+} cccl_device_scan_build_result_t;
 
 CCCL_C_API CUresult cccl_device_scan_build(
-  cccl_device_scan_build_result_t* build,
+  cccl_device_scan_build_result_t* build_ptr,
   cccl_iterator_t d_in,
   cccl_iterator_t d_out,
   cccl_op_t op,
@@ -45,7 +46,7 @@ CCCL_C_API CUresult cccl_device_scan_build(
   const char* cub_path,
   const char* thrust_path,
   const char* libcudacxx_path,
-  const char* ctk_path) noexcept;
+  const char* ctk_path);
 
 CCCL_C_API CUresult cccl_device_scan(
   cccl_device_scan_build_result_t build,
@@ -53,11 +54,11 @@ CCCL_C_API CUresult cccl_device_scan(
   size_t* temp_storage_bytes,
   cccl_iterator_t d_in,
   cccl_iterator_t d_out,
-  unsigned long long num_items,
+  uint64_t num_items,
   cccl_op_t op,
   cccl_value_t init,
-  CUstream stream) noexcept;
+  CUstream stream);
 
-CCCL_C_API CUresult cccl_device_scan_cleanup(cccl_device_scan_build_result_t* bld_ptr) noexcept;
+CCCL_C_API CUresult cccl_device_scan_cleanup(cccl_device_scan_build_result_t* bld_ptr);
 
 CCCL_C_EXTERN_C_END

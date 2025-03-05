@@ -208,7 +208,7 @@ struct dynamic_merge_sort_policy_t
     return op.template Invoke<merge_sort_runtime_tuning_policy>(GetPolicy(device_ptx_version, key_size));
   }
 
-  int key_size;
+  uint64_t key_size;
 };
 
 struct merge_sort_kernel_source
@@ -233,29 +233,28 @@ struct merge_sort_kernel_source
 
 struct dynamic_vsmem_helper_t
 {
-  ::cuda::std::size_t block_sort_vsmem_per_block = 0;
-  ::cuda::std::size_t merge_vsmem_per_block      = 0;
-
-  ::cuda::std::size_t BlockSortVSMemPerBlock() const
+  template <typename PolicyT>
+  static ::cuda::std::size_t BlockSortVSMemPerBlock(PolicyT /*policy*/)
   {
-    return block_sort_vsmem_per_block;
-  }
-
-  ::cuda::std::size_t MergeVSMemPerBlock() const
-  {
-    return merge_vsmem_per_block;
+    return 0;
   }
 
   template <typename PolicyT>
-  int BlockThreads(PolicyT policy) const
+  static ::cuda::std::size_t MergeVSMemPerBlock(PolicyT /*policy*/)
   {
-    return uses_fallback_policy() ? fallback_policy.block_size : policy.block_size;
+    return 0;
   }
 
   template <typename PolicyT>
-  int ItemsPerTile(PolicyT policy) const
+  static int BlockThreads(PolicyT policy)
   {
-    return uses_fallback_policy() ? fallback_policy.items_per_tile : policy.items_per_tile;
+    return policy.block_size;
+  }
+
+  template <typename PolicyT>
+  static int ItemsPerTile(PolicyT policy)
+  {
+    return policy.items_per_tile;
   }
 
 private:
@@ -268,7 +267,7 @@ private:
 } // namespace merge_sort
 
 CUresult cccl_device_merge_sort_build(
-  cccl_device_merge_sort_build_result_t* build,
+  cccl_device_merge_sort_build_result_t* build_ptr,
   cccl_iterator_t input_keys_it,
   cccl_iterator_t input_items_it,
   cccl_iterator_t output_keys_it,
@@ -279,7 +278,7 @@ CUresult cccl_device_merge_sort_build(
   const char* cub_path,
   const char* thrust_path,
   const char* libcudacxx_path,
-  const char* ctk_path) noexcept
+  const char* ctk_path)
 {
   CUresult error = CUDA_SUCCESS;
   try
@@ -406,14 +405,15 @@ CUresult cccl_device_merge_sort_build(
         .add_link_list(ltoir_list)
         .finalize_program(num_lto_args, lopts);
 
-    cuLibraryLoadData(&build->library, result.data.get(), nullptr, nullptr, 0, nullptr, nullptr, 0);
-    check(cuLibraryGetKernel(&build->block_sort_kernel, build->library, block_sort_kernel_lowered_name.c_str()));
-    check(cuLibraryGetKernel(&build->partition_kernel, build->library, partition_kernel_lowered_name.c_str()));
-    check(cuLibraryGetKernel(&build->merge_kernel, build->library, merge_kernel_lowered_name.c_str()));
+    cuLibraryLoadData(&build_ptr->library, result.data.get(), nullptr, nullptr, 0, nullptr, nullptr, 0);
+    check(
+      cuLibraryGetKernel(&build_ptr->block_sort_kernel, build_ptr->library, block_sort_kernel_lowered_name.c_str()));
+    check(cuLibraryGetKernel(&build_ptr->partition_kernel, build_ptr->library, partition_kernel_lowered_name.c_str()));
+    check(cuLibraryGetKernel(&build_ptr->merge_kernel, build_ptr->library, merge_kernel_lowered_name.c_str()));
 
-    build->cc         = cc;
-    build->cubin      = (void*) result.data.release();
-    build->cubin_size = result.size;
+    build_ptr->cc         = cc;
+    build_ptr->cubin      = (void*) result.data.release();
+    build_ptr->cubin_size = result.size;
   }
   catch (const std::exception& exc)
   {
@@ -434,9 +434,9 @@ CUresult cccl_device_merge_sort(
   cccl_iterator_t d_in_items,
   cccl_iterator_t d_out_keys,
   cccl_iterator_t d_out_items,
-  unsigned long long num_items,
+  uint64_t num_items,
   cccl_op_t op,
-  CUstream stream) noexcept
+  CUstream stream)
 {
   if (cccl_iterator_kind_t::CCCL_ITERATOR == d_out_keys.type || cccl_iterator_kind_t::CCCL_ITERATOR == d_out_items.type)
   {
@@ -479,8 +479,7 @@ CUresult cccl_device_merge_sort(
                                 stream,
                                 {build},
                                 cub::detail::CudaDriverLauncherFactory{cu_device, build.cc},
-                                {d_out_keys.value_type.size},
-                                {});
+                                {d_out_keys.value_type.size});
   }
   catch (const std::exception& exc)
   {
@@ -499,17 +498,17 @@ CUresult cccl_device_merge_sort(
   return error;
 }
 
-CUresult cccl_device_merge_sort_cleanup(cccl_device_merge_sort_build_result_t* bld_ptr) noexcept
+CUresult cccl_device_merge_sort_cleanup(cccl_device_merge_sort_build_result_t* build_ptr)
 {
   try
   {
-    if (bld_ptr == nullptr)
+    if (build_ptr == nullptr)
     {
       return CUDA_ERROR_INVALID_VALUE;
     }
 
-    std::unique_ptr<char[]> cubin(reinterpret_cast<char*>(bld_ptr->cubin));
-    check(cuLibraryUnload(bld_ptr->library));
+    std::unique_ptr<char[]> cubin(reinterpret_cast<char*>(build_ptr->cubin));
+    check(cuLibraryUnload(build_ptr->library));
   }
   catch (const std::exception& exc)
   {

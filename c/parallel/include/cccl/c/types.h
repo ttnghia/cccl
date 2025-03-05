@@ -21,6 +21,7 @@
 #endif // !_WIN32
 
 #include <cccl/c/extern_c.h>
+#include <stddef.h>
 
 CCCL_C_EXTERN_C_BEGIN
 
@@ -37,53 +38,53 @@ typedef enum cccl_type_enum
   CCCL_FLOAT32 = 8,
   CCCL_FLOAT64 = 9,
   CCCL_STORAGE = 10
-} ccclType;
+} cccl_type_enum;
 
 typedef struct cccl_type_info
 {
-  int size;
-  int alignment;
+  size_t size;
+  size_t alignment;
   cccl_type_enum type;
-} ccclTypeInfo;
+} cccl_type_info;
 
 typedef enum cccl_op_kind_t
 {
   CCCL_STATELESS = 0,
   CCCL_STATEFUL  = 1
-} ccclOpKind;
+} cccl_op_kind_t;
 
 typedef struct cccl_op_t
 {
   cccl_op_kind_t type;
   const char* name;
   const char* ltoir;
-  int ltoir_size;
-  int size;
-  int alignment;
+  size_t ltoir_size;
+  size_t size;
+  size_t alignment;
   void* state;
-} ccclOp;
+} cccl_op_t;
 
 typedef enum cccl_iterator_kind_t
 {
   CCCL_POINTER  = 0,
   CCCL_ITERATOR = 1
-} ccclIteratorKind;
+} cccl_iterator_kind_t;
 
 typedef struct cccl_value_t
 {
   cccl_type_info type;
   void* state;
-} ccclValue;
+} cccl_value_t;
 
 typedef struct cccl_iterator_t
 {
-  int size;
-  int alignment;
+  size_t size;
+  size_t alignment;
   cccl_iterator_kind_t type;
   cccl_op_t advance;
   cccl_op_t dereference;
   cccl_type_info value_type;
   void* state;
-} ccclIterator;
+} cccl_iterator_t;
 
 CCCL_C_EXTERN_C_END
