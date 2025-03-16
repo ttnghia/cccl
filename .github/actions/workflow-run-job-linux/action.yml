@@ -158,7 +158,7 @@ runs:
         # Download new sccache binary
         mkdir -p "$RUNNER_TEMP/bin"
         curl -fsSL \
-          "https://github.com/trxcllnt/sccache/releases/download/v0.9.1-rapids.42/sccache-v0.9.1-rapids.42-$(uname -m)-unknown-linux-musl.tar.gz" \
+          "https://github.com/trxcllnt/sccache/releases/download/v0.9.1-rapids.43/sccache-v0.9.1-rapids.43-$(uname -m)-unknown-linux-musl.tar.gz" \
         | tar -C "$RUNNER_TEMP/bin" -zf - --wildcards --strip-components=1 -x '*/sccache'
 
         declare -a extra_launch_args=(
@@ -181,10 +181,11 @@ runs:
           # Configure sccache client to talk to the build cluster
           cat <<EOF >> "$RUNNER_TEMP/.config/sccache/config"
         [dist]
-        # Never fallback to building locally
+        # Infinitely retry all retryable dist-compilation errors
         max_retries = inf
-        # Retry failed builds 10 times before building locally
-        # max_retries = 10
+        # Never fallback to building locally, fail instead
+        fallback_to_local_compile = false
+
         scheduler_url = "https://${ARCH}.${OS,,}.sccache.gha-runners.nvidia.com"
 
         # Build cluster auth
@@ -198,12 +199,14 @@ runs:
         request_timeout = 720
         EOF
 
-          extra_launch_args+=(
-            # Repopulate the cache
-            --env "SCCACHE_RECACHE=1"
-            # Do not cache build products
-            # --env "SCCACHE_NO_CACHE=1"
-          )
+          if grep -q '"./ci/build_' <<< "$COMMAND"; then
+            extra_launch_args+=(
+              # Repopulate the cache
+              --env "SCCACHE_RECACHE=1"
+              # Do not cache build products
+              # --env "SCCACHE_NO_CACHE=1"
+            )
+          fi
 
           # Over-subscribe -j to keep the build cluster busy if _not_ ClangCUDA.
           # ClangCUDA can use the build cluster for C++ files, but _not_ CUDA,
