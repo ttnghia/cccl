@@ -196,7 +196,7 @@ runs:
         # Build cluster network config
         [dist.net]
         connect_timeout = 30
-        request_timeout = 3600
+        request_timeout = 1800
         EOF
 
           if grep -q '"./ci/build_' <<< "$COMMAND"; then
