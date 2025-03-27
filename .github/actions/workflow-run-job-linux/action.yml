@@ -158,7 +158,7 @@ runs:
         # Download new sccache binary
         mkdir -p "$RUNNER_TEMP/bin"
         curl -fsSL \
-          "https://github.com/trxcllnt/sccache/releases/download/v0.10.0-rapids.7/sccache-v0.10.0-rapids.7-$(uname -m)-unknown-linux-musl.tar.gz" \
+          "https://github.com/trxcllnt/sccache/releases/download/v0.10.0-rapids.8/sccache-v0.10.0-rapids.8-$(uname -m)-unknown-linux-musl.tar.gz" \
         | tar -C "$RUNNER_TEMP/bin" -zf - --wildcards --strip-components=1 -x '*/sccache'
 
         declare -a extra_launch_args=(
