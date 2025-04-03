@@ -213,7 +213,7 @@ runs:
           # and we'll OOM if we try to compile too many at once.
           if ! grep -q '\-cuda "clang' <<< "$COMMAND"; then
             extra_launch_args+=(
-              --env "PARALLEL_LEVEL=100000"
+              --env "PARALLEL_LEVEL=$((CPUS * 64))"
               --ulimit nofile=100000:100000
             )
           fi
