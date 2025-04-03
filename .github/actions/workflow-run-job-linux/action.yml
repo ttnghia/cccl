@@ -158,7 +158,7 @@ runs:
         # Download new sccache binary
         mkdir -p "$RUNNER_TEMP/bin"
         curl -fsSL \
-          "https://github.com/trxcllnt/sccache/releases/download/v0.10.0-rapids.10/sccache-v0.10.0-rapids.10-$(uname -m)-unknown-linux-musl.tar.gz" \
+          "https://github.com/trxcllnt/sccache/releases/download/v0.10.0-rapids.14/sccache-v0.10.0-rapids.14-$(uname -m)-unknown-linux-musl.tar.gz" \
         | tar -C "$RUNNER_TEMP/bin" -zf - --wildcards --strip-components=1 -x '*/sccache'
 
         declare -a extra_launch_args=(
@@ -213,7 +213,7 @@ runs:
           # and we'll OOM if we try to compile too many at once.
           if ! grep -q '\-cuda "clang' <<< "$COMMAND"; then
             extra_launch_args+=(
-              --env "PARALLEL_LEVEL=$((CPUS * 16 > 128 ? 128 : CPUS * 16))"
+              --env "PARALLEL_LEVEL=100000"
               --ulimit nofile=100000:100000
             )
           fi
