@@ -214,6 +214,7 @@ runs:
           if ! grep -q '\-cuda "clang' <<< "$COMMAND"; then
             extra_launch_args+=(
               --env "PARALLEL_LEVEL=$((CPUS * 16 > 128 ? 128 : CPUS * 16))"
+              --ulimit nofile=100000:100000
             )
           fi
 
@@ -242,6 +243,7 @@ runs:
           --docker \
           --cuda ${{inputs.cuda}} \
           --host ${{inputs.host}} \
+          "${extra_launch_args[@]}" \
           --env "CI=$CI" \
           --env "AWS_ROLE_ARN=" \
           --env "COMMAND=$COMMAND" \
@@ -259,7 +261,6 @@ runs:
           --volume "${{runner.temp}}/.aws:/root/.aws" \
           --volume "${{runner.temp}}/.config:/root/.config:ro" \
           --volume "$(dirname "$(dirname "${{github.workspace}}")"):/__w" \
-          "${extra_launch_args[@]}" \
           -- /ci.sh
 
     - if: ${{ always() }}
