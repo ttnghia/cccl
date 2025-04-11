@@ -7,8 +7,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef _CUDA___MUL_OVERFLOW_CAST_H
-#define _CUDA___MUL_OVERFLOW_CAST_H
+#ifndef _CUDA___MUL_OVERFLOW_H
+#define _CUDA___MUL_OVERFLOW_H
 
 #include <cuda/std/detail/__config>
 
@@ -96,7 +96,7 @@ template <class _Tp>
     {
       _CUDA_VSTD::int16_t __result;
       bool __overflow = ::_mul_full_overflow_i8(__lhs, __rhs, &__result);
-      return {static_cast<_CUDA_VSTD::int8_t>(__result), __overflow};
+      return {static_cast<_Tp>(__result), __overflow};
     }
     else if constexpr (sizeof(_Tp) == sizeof(_CUDA_VSTD::int16_t))
     {
@@ -124,7 +124,7 @@ template <class _Tp>
     if constexpr (sizeof(_Tp) == sizeof(_CUDA_VSTD::int32_t))
     {
       const _CUDA_VSTD::int64_t __result = ::__emul(__lhs, __rhs);
-      return {__result, !_CUDA_VSTD::in_range<_CUDA_VSTD::int32_t>(__result)};
+      return {static_cast<_Tp>(__result), !_CUDA_VSTD::in_range<_Tp>(__result)};
     }
     else if constexpr (sizeof(_Tp) == sizeof(_CUDA_VSTD::int64_t))
     {
@@ -147,7 +147,7 @@ template <class _Tp>
     {
       _CUDA_VSTD::uint16_t __result;
       bool __overflow = ::_mul_full_overflow_u8(__lhs, __rhs, &__result);
-      return {static_cast<uint8_t>(__result), __overflow};
+      return {static_cast<_Tp>(__result), __overflow};
     }
     else if constexpr (sizeof(_Tp) == sizeof(_CUDA_VSTD::uint16_t))
     {
@@ -175,7 +175,7 @@ template <class _Tp>
     if constexpr (sizeof(_Tp) == sizeof(_CUDA_VSTD::uint32_t))
     {
       const _CUDA_VSTD::uint64_t __result = ::__emulu(__lhs, __rhs);
-      return {static_cast<_CUDA_VSTD::uint32_t>(__result), !_CUDA_VSTD::in_range<_CUDA_VSTD::uint32_t>(__result)};
+      return {static_cast<_Tp>(__result), !_CUDA_VSTD::in_range<_Tp>(__result)};
     }
     else if constexpr (sizeof(_Tp) == sizeof(_CUDA_VSTD::uint64_t))
     {
@@ -264,4 +264,4 @@ _CCCL_REQUIRES(_CCCL_TRAIT(_CUDA_VSTD::__cccl_is_cv_integer, _Result)
 
 _LIBCUDACXX_END_NAMESPACE_CUDA
 
-#endif // _CUDA___MUL_OVERFLOW_CAST_H
+#endif // _CUDA___MUL_OVERFLOW_H
