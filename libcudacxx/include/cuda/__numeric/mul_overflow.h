@@ -59,7 +59,6 @@ __mul_overflow_constexpr(_Tp __lhs, _Tp __rhs) noexcept
   }
   else if constexpr (_CCCL_TRAIT(_CUDA_VSTD::is_signed, _Tp))
   {
-    using _Up             = _CUDA_VSTD::make_unsigned_t<_Tp>;
     const auto __lhs_sign = _CUDA_VSTD::cmp_less(__lhs, 0);
     const auto __rhs_sign = _CUDA_VSTD::cmp_less(__rhs, 0);
 
@@ -86,12 +85,13 @@ __mul_overflow_constexpr(_Tp __lhs, _Tp __rhs) noexcept
   }
 }
 
+#if !_CCCL_COMPILER(NVRTC)
 template <class _Tp>
 [[nodiscard]] _CCCL_HOST _CCCL_HIDE_FROM_ABI overflow_result<_Tp> __mul_overflow_host(_Tp __lhs, _Tp __rhs) noexcept
 {
   if constexpr (_CCCL_TRAIT(_CUDA_VSTD::is_signed, _Tp))
   {
-#if _CCCL_COMPILER(MSVC, >=, 19, 37) && _CCCL_ARCH(X86_64)
+#  if _CCCL_COMPILER(MSVC, >=, 19, 37) && _CCCL_ARCH(X86_64)
     if constexpr (sizeof(_Tp) == sizeof(_CUDA_VSTD::int8_t))
     {
       _CUDA_VSTD::int16_t __result;
@@ -120,7 +120,7 @@ template <class _Tp>
     {
       return ::cuda::__mul_overflow_constexpr(__lhs, __rhs);
     }
-#elif _CCCL_COMPILER(MSVC) && _CCCL_ARCH(X86_64)
+#  elif _CCCL_COMPILER(MSVC) && _CCCL_ARCH(X86_64)
     if constexpr (sizeof(_Tp) == sizeof(_CUDA_VSTD::int32_t))
     {
       const _CUDA_VSTD::int64_t __result = ::__emul(__lhs, __rhs);
@@ -136,13 +136,13 @@ template <class _Tp>
     {
       return ::cuda::__mul_overflow_constexpr(__lhs, __rhs);
     }
-#else // ^^^ _CCCL_COMPILER(MSVC) && _CCCL_ARCH(X86_64) ^^^ / vvv !_CCCL_COMPILER(MSVC) || !_CCCL_ARCH(X86_64) vvv
+#  else // ^^^ _CCCL_COMPILER(MSVC) && _CCCL_ARCH(X86_64) ^^^ / vvv !_CCCL_COMPILER(MSVC) || !_CCCL_ARCH(X86_64) vvv
     return ::cuda::__mul_overflow_constexpr(__lhs, __rhs);
-#endif // ^^^ !_CCCL_COMPILER(MSVC) || !_CCCL_ARCH(X86_64) ^^^
+#  endif // ^^^ !_CCCL_COMPILER(MSVC) || !_CCCL_ARCH(X86_64) ^^^
   }
   else // ^^^ signed types ^^^ / vvv unsigned types vvv
   {
-#if _CCCL_COMPILER(MSVC, >=, 19, 37) && _CCCL_ARCH(X86_64)
+#  if _CCCL_COMPILER(MSVC, >=, 19, 37) && _CCCL_ARCH(X86_64)
     if constexpr (sizeof(_Tp) == sizeof(_CUDA_VSTD::uint8_t))
     {
       _CUDA_VSTD::uint16_t __result;
@@ -171,7 +171,7 @@ template <class _Tp>
     {
       return ::cuda::__mul_overflow_constexpr(__lhs, __rhs);
     }
-#elif _CCCL_COMPILER(MSVC) && _CCCL_ARCH(X86_64)
+#  elif _CCCL_COMPILER(MSVC) && _CCCL_ARCH(X86_64)
     if constexpr (sizeof(_Tp) == sizeof(_CUDA_VSTD::uint32_t))
     {
       const _CUDA_VSTD::uint64_t __result = ::__emulu(__lhs, __rhs);
@@ -185,11 +185,12 @@ template <class _Tp>
     {
       return ::cuda::__mul_overflow_constexpr(__lhs, __rhs);
     }
-#else // ^^^ _CCCL_COMPILER(MSVC) && _CCCL_ARCH(X86_64) ^^^ / vvv !_CCCL_COMPILER(MSVC) || !_CCCL_ARCH(X86_64) vvv
+#  else // ^^^ _CCCL_COMPILER(MSVC) && _CCCL_ARCH(X86_64) ^^^ / vvv !_CCCL_COMPILER(MSVC) || !_CCCL_ARCH(X86_64) vvv
     return ::cuda::__mul_overflow_constexpr(__lhs, __rhs);
-#endif // ^^^ !_CCCL_COMPILER(MSVC) || !_CCCL_ARCH(X86_64) ^^^
+#  endif // ^^^ !_CCCL_COMPILER(MSVC) || !_CCCL_ARCH(X86_64) ^^^
   } // ^^^ unsigned types ^^^
 }
+#endif // !_CCCL_COMPILER(NVRTC)
 
 // todo: optimize for device?
 // template <class _Tp>
