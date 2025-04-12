@@ -216,9 +216,13 @@ runs:
               extra_launch_args+=(
                 --env "PARALLEL_LEVEL=100000"
               )
-            else
+            elif ! grep -q '_python.sh' <<< "$COMMAND"; then
               extra_launch_args+=(
                 --env "PARALLEL_LEVEL=$((CPUS * 64))"
+              )
+            else
+              extra_launch_args+=(
+                --env "PARALLEL_LEVEL=${CPUS}"
               )
             fi
             extra_launch_args+=(
