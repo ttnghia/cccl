@@ -35,6 +35,7 @@
 #include <cuda/std/__type_traits/make_nbit_int.h>
 #include <cuda/std/__type_traits/make_unsigned.h>
 #include <cuda/std/__utility/cmp.h>
+#include <cuda/std/climits>
 #include <cuda/std/cstdint>
 
 #if _CCCL_COMPILER(MSVC)
@@ -47,6 +48,7 @@ template <class _Tp>
 [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr overflow_result<_Tp>
 __mul_overflow_constexpr(_Tp __lhs, _Tp __rhs) noexcept
 {
+  // If there is a wider type available, upcast the operands and check for overflow
   if constexpr (sizeof(_Tp) < sizeof(_CUDA_VSTD::__cccl_intmax_t))
   {
     using _Up               = _CUDA_VSTD::__make_nbit_int_t<sizeof(_Tp) * CHAR_BIT * 2>;
@@ -217,7 +219,8 @@ mul_overflow(_Lhs __lhs, _Rhs __rhs) noexcept
   __result.overflow = _CCCL_BUILTIN_MUL_OVERFLOW(__lhs, __rhs, &__result.value);
   return __result;
 #else // ^^^ _CCCL_BUILTIN_MUL_OVERFLOW ^^^ / vvv !_CCCL_BUILTIN_MUL_OVERFLOW vvv
-  if constexpr (_CCCL_TRAIT(_CUDA_VSTD::is_same, _Lhs, _Rhs) && _CCCL_TRAIT(_CUDA_VSTD::is_same, _Lhs, _ActResult))
+  if constexpr (_CCCL_TRAIT(_CUDA_VSTD::is_same, _ActResult, _Lhs)
+                && _CCCL_TRAIT(_CUDA_VSTD::is_same, _ActResult, _Rhs))
   {
     if (!_CUDA_VSTD::__cccl_default_is_constant_evaluated())
     {
@@ -226,6 +229,16 @@ mul_overflow(_Lhs __lhs, _Rhs __rhs) noexcept
     }
     return ::cuda::__mul_overflow_constexpr(__lhs, __rhs);
   }
+  // fast path if the result type is at least twice the size of the operands, but we need to handle the case when the
+  // result type is signed and both operands are unsigned
+  else if constexpr (sizeof(_ActResult) >= 2 * sizeof(_Lhs) && sizeof(_ActResult) >= 2 * sizeof(_Rhs)
+                     && ((_CCCL_TRAIT(_CUDA_VSTD::is_signed, _ActResult)
+                          == (_CCCL_TRAIT(_CUDA_VSTD::is_signed, _Lhs) || _CCCL_TRAIT(_CUDA_VSTD::is_signed, _Rhs)))
+                         || sizeof(_Lhs) != sizeof(_Rhs)))
+  {
+    return {static_cast<_ActResult>(_ActResult(__lhs) * _ActResult(__rhs)), false};
+  }
+  // generic slow path
   else
   {
     using _UCommon = _CUDA_VSTD::make_unsigned_t<_CUDA_VSTD::common_type_t<_Lhs, _Rhs, _ActResult>>;
