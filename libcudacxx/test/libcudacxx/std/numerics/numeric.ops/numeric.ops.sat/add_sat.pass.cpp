@@ -21,6 +21,11 @@
 template <class I>
 __host__ __device__ constexpr void test_add_sat(I x, I y, I res, int zero_value)
 {
+  if constexpr (cuda::std::is_same_v<I, uint16_t>)
+  {
+    auto ret = cuda::std::add_sat(static_cast<I>(zero_value + x), static_cast<I>(zero_value + y));
+    printf("TEST: %d   %d  (%d)\n", (int) ret, (int) res, zero_value);
+  }
   assert(cuda::std::add_sat(static_cast<I>(zero_value + x), static_cast<I>(zero_value + y)) == res);
 }
 
