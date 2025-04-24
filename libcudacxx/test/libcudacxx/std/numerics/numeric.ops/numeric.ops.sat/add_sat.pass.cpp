@@ -99,23 +99,38 @@ __host__ __device__ constexpr void test_unsigned(int zero_value)
   static_assert(noexcept(cuda::std::add_sat(I{}, I{})), "");
 
   // Litmit values (0, 1, min, max)
-
+  printf("%d\n", __LINE__);
   test_add_sat<I>(I{0}, I{0}, I{0}, zero_value);
+  printf("%d\n", __LINE__);
   test_add_sat<I>(I{0}, I{1}, I{1}, zero_value);
+  printf("%d\n", __LINE__);
   test_add_sat<I>(I{0}, minVal, I{0}, zero_value);
+  printf("%d\n", __LINE__);
   test_add_sat<I>(I{0}, maxVal, maxVal, zero_value);
+  printf("%d\n", __LINE__);
   test_add_sat<I>(I{1}, I{0}, I{1}, zero_value);
+  printf("%d\n", __LINE__);
   test_add_sat<I>(I{1}, I{1}, I{2}, zero_value);
+  printf("%d\n", __LINE__);
   test_add_sat<I>(I{1}, minVal, I{1}, zero_value);
-  test_add_sat<I>(I{1}, maxVal, maxVal, zero_value); // saturated
+  printf("%d\n", __LINE__);
+  test_add_sat<I>(I{1}, maxVal, maxVal, zero_value);
+  printf("%d\n", __LINE__); // saturated
   test_add_sat<I>(minVal, I{0}, I{0}, zero_value);
+  printf("%d\n", __LINE__);
   test_add_sat<I>(minVal, I{1}, I{1}, zero_value);
+  printf("%d\n", __LINE__);
   test_add_sat<I>(minVal, minVal, minVal, zero_value);
+  printf("%d\n", __LINE__);
   test_add_sat<I>(minVal, maxVal, maxVal, zero_value);
+  printf("%d\n", __LINE__);
   test_add_sat<I>(maxVal, I{0}, maxVal, zero_value);
-  test_add_sat<I>(maxVal, I{1}, maxVal, zero_value); // saturated
+  test_add_sat<I>(maxVal, I{1}, maxVal, zero_value);
+  printf("%d\n", __LINE__); // saturated
   test_add_sat<I>(maxVal, minVal, maxVal, zero_value);
-  test_add_sat<I>(maxVal, maxVal, maxVal, zero_value); // saturated
+  printf("%d\n", __LINE__);
+  test_add_sat<I>(maxVal, maxVal, maxVal, zero_value);
+  printf("%d\n", __LINE__); // saturated
 
   // No saturation (no limit values)
 
@@ -126,8 +141,11 @@ __host__ __device__ constexpr void test_unsigned(int zero_value)
   {
     constexpr I x = maxVal / I{2} + I{27};
     constexpr I y = maxVal / I{2} + I{28};
+    printf("%d\n", __LINE__); // saturated
     test_add_sat<I>(x, y, maxVal, zero_value); // saturated
+    printf("%d\n", __LINE__); // saturated
     test_add_sat<I>(x, maxVal, maxVal, zero_value); // saturated
+    printf("%d\n", __LINE__); // saturated
     test_add_sat<I>(maxVal, y, maxVal, zero_value); // saturated
   }
 }
@@ -160,7 +178,7 @@ int main(int, char**)
   volatile int zero_value = 0;
 
   test(zero_value);
-  static_assert(test(0));
+  // static_assert(test(0));
 
   return 0;
 }

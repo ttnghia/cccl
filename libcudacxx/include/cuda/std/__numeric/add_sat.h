@@ -33,8 +33,6 @@
 #include <cuda/std/cstdint>
 #include <cuda/std/limits>
 
-#include <nv/target>
-
 #if _CCCL_COMPILER(MSVC)
 #  include <intrin.h>
 #endif // _CCCL_COMPILER(MSVC)
@@ -43,7 +41,7 @@ _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
 template <class _Tp>
 [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr _Tp
-__add_sat_clamp_overflow(_Tp, [[maybe_unused]] _Tp __y, _Tp __result, [[maybe_unused]] bool __overflow) noexcept
+__add_sat_clamp_overflow(_Tp, [[maybe_unused]] _Tp __y, _Tp __result, bool __overflow) noexcept
 {
   if (__overflow)
   {
@@ -64,13 +62,13 @@ template <class _Tp>
 {
   if constexpr (_CCCL_TRAIT(is_signed, _Tp))
   {
-    using _Up    = make_unsigned_t<_Tp>;
-    _Tp __result = static_cast<_Tp>(static_cast<_Up>(__x) + static_cast<_Up>(__y));
+    using _Up     = make_unsigned_t<_Tp>;
+    auto __result = static_cast<_Tp>(static_cast<_Up>(__x) + static_cast<_Up>(__y));
     return _CUDA_VSTD::__add_sat_clamp_overflow(__x, __y, __result, (__result < __x) == !(__y < static_cast<_Tp>(0)));
   }
   else
   {
-    _Tp __result = static_cast<_Tp>(__x + __y);
+    auto __result = static_cast<_Tp>(__x + __y);
     return _CUDA_VSTD::__add_sat_clamp_overflow(__x, __y, __result, (__result < __x));
   }
 }
@@ -203,14 +201,15 @@ template <class _Tp>
   {
     if constexpr (sizeof(_Tp) < sizeof(int32_t))
     {
-      const auto __result = static_cast<int32_t>(__x) + static_cast<int32_t>(__y);
-      return static_cast<_Tp>(_CUDA_VSTD::clamp(
-        __result, static_cast<int32_t>(numeric_limits<_Tp>::min()), static_cast<int32_t>(numeric_limits<_Tp>::max())));
+      constexpr auto __min = int32_t{numeric_limits<_Tp>::min()};
+      constexpr auto __max = int32_t{numeric_limits<_Tp>::max()};
+      auto __result        = static_cast<int32_t>(__x) + static_cast<int32_t>(__y);
+      return static_cast<_Tp>(::min(::max(__result, __min), __max));
     }
     else if constexpr (sizeof(_Tp) == sizeof(int32_t))
     {
       int32_t __result{};
-      asm volatile("add.sat.s32 %0, %1, %2;" : "=r"(__result) : "r"(__x), "r"(__y));
+      asm("add.sat.s32 %0, %1, %2;" : "=r"(__result) : "r"(__x), "r"(__y));
       return __result;
     }
     else if constexpr (sizeof(_Tp) == sizeof(int64_t))
@@ -238,7 +237,7 @@ template <class _Tp>
   }
   else // ^^^ signed types ^^^ / vvv unsigned types vvv
   {
-    const _Tp __bneg_x = static_cast<_Tp>(~__x);
+    const auto __bneg_x = static_cast<_Tp>(~__x);
     return static_cast<_Tp>(__x + _CUDA_VSTD::min<_Tp>(__y, __bneg_x));
   } // ^^^ unsigned types ^^^
 }
@@ -248,7 +247,7 @@ _CCCL_TEMPLATE(class _Tp)
 _CCCL_REQUIRES(__cccl_is_integer_v<_Tp>)
 [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr _Tp add_sat(_Tp __x, _Tp __y) noexcept
 {
-#if defined(_CCCL_BUILTIN_ADD_OVERFLOW)
+#if defined(_CCCL_BUILTIN_ADD_OVERFLOW) && !defined(__CUDA_ARCH__)
   _Tp __result{};
   bool __overflow = _CCCL_BUILTIN_ADD_OVERFLOW(__x, __y, &__result);
   return _CUDA_VSTD::__add_sat_clamp_overflow(__x, __y, __result, __overflow);
