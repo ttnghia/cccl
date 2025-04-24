@@ -237,8 +237,17 @@ template <class _Tp>
   }
   else // ^^^ signed types ^^^ / vvv unsigned types vvv
   {
-    const auto __bneg_x = static_cast<_Tp>(~__x);
-    return static_cast<_Tp>(__x + _CUDA_VSTD::min<_Tp>(__y, __bneg_x));
+    using _Up = _If<sizeof(_Tp) < sizeof(uint32_t), uint32_t, _Tp>;
+    if constexpr (is_same_v<uint16_t, _Tp>)
+    {
+      const auto bneg_x = static_cast<_Tp>(~static_cast<_Up>(__x));
+      printf("static_cast<_Up>(__x):                    %d\n", static_cast<_Up>(__x));
+      printf("static_cast<_Tp>(~static_cast<_Up>(__x)): %d\n", static_cast<_Tp>(~static_cast<_Up>(__x)));
+      printf("_CUDA_VSTD::min(__y, bneg_x):             %d\n", _CUDA_VSTD::min(__y, bneg_x));
+      printf("res:                                      %d\n", static_cast<_Tp>(__x + _CUDA_VSTD::min(__y, bneg_x)));
+    }
+    const auto __bneg_x = static_cast<_Tp>(~static_cast<_Up>(__x));
+    return static_cast<_Tp>(__x + _CUDA_VSTD::min(__y, __bneg_x));
   } // ^^^ unsigned types ^^^
 }
 #endif // _CCCL_HAS_CUDA_COMPILER()
