@@ -151,19 +151,18 @@ struct __pretty_name_begin
   struct __pretty_name_end;
 };
 
-// If a position is -1, it is an invalid position. Return it unchanged.
-[[nodiscard]] _CCCL_HIDE_FROM_ABI _CCCL_HOST_DEVICE constexpr ptrdiff_t
-__add_string_view_position(ptrdiff_t __pos, ptrdiff_t __diff) noexcept
-{
-  return __pos == -1 ? -1 : __pos + __diff;
-}
-
 // Get the type name from the pretty name by trimming the front and back.
 [[nodiscard]] _CCCL_HIDE_FROM_ABI _CCCL_HOST_DEVICE constexpr string_view __find_pretty_name(string_view __sv) noexcept
 {
-  return __sv.substr(_CUDA_VSTD::__add_string_view_position(
-                       __sv.find("__pretty_name_begin<"), ptrdiff_t(sizeof("__pretty_name_begin<")) - 1),
-                     __sv.find_end(">::__pretty_name_end"));
+  constexpr string_view __prefix{"__pretty_name_begin<"};
+  constexpr string_view __suffix{">::__pretty_name_end"};
+
+  auto __start = __sv.find(__prefix);
+  if (__start != string_view::npos) // if __start is npos, substr will throw
+  {
+    __start += __prefix.size();
+  }
+  return __sv.substr(__start, __sv.rfind(__suffix) - __start);
 }
 
 template <class _Tp>
