@@ -59,8 +59,30 @@ void test_with_default_type_traits()
 }
 
 template <class CharT>
-struct custom_type_traits : std::char_traits<CharT>
-{};
+struct custom_type_traits
+    : private std::char_traits<CharT>
+    , private cuda::std::char_traits<CharT>
+{
+  using cuda::std::char_traits<CharT>::char_type;
+  using cuda::std::char_traits<CharT>::int_type;
+  using std::char_traits<CharT>::pos_type;
+  using std::char_traits<CharT>::off_type;
+  using std::char_traits<CharT>::state_type;
+
+  using cuda::std::char_traits<CharT>::assign;
+  using cuda::std::char_traits<CharT>::eq;
+  using cuda::std::char_traits<CharT>::lt;
+  using cuda::std::char_traits<CharT>::compare;
+  using cuda::std::char_traits<CharT>::length;
+  using cuda::std::char_traits<CharT>::find;
+  using cuda::std::char_traits<CharT>::move;
+  using cuda::std::char_traits<CharT>::copy;
+  using cuda::std::char_traits<CharT>::to_char_type;
+  using cuda::std::char_traits<CharT>::to_int_type;
+  using cuda::std::char_traits<CharT>::eq_int_type;
+  using std::char_traits<CharT>::eof;
+  using std::char_traits<CharT>::not_eof;
+};
 
 template <class CharT>
 void test_with_custom_type_traits()

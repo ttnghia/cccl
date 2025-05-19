@@ -147,6 +147,21 @@ public:
       , __size_{_CUDA_VRANGES::size(__r)}
   {}
 
+#if !_CCCL_COMPILER(NVRTC)
+  _CCCL_HIDE_FROM_ABI constexpr basic_string_view(::std::basic_string_view<_CharT, _Traits> __sv) noexcept
+      : __data_{__sv.data()}
+      , __size_{__sv.size()}
+  {}
+
+  _CCCL_TEMPLATE(bool = true)
+  _CCCL_REQUIRES(is_same_v<_Traits, char_traits<_CharT>>)
+  _CCCL_HIDE_FROM_ABI constexpr basic_string_view(
+    ::std::basic_string_view<_CharT, ::std::char_traits<_CharT>> __sv) noexcept
+      : __data_{__sv.data()}
+      , __size_{__sv.size()}
+  {}
+#endif // !_CCCL_COMPILER(NVRTC)
+
   [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr const_iterator begin() const noexcept
   {
     return const_iterator{__data_};
@@ -722,6 +737,20 @@ public:
     return __lhs.compare(__rhs) >= 0;
   }
 
+#if !_CCCL_COMPILER(NVRTC)
+  _CCCL_HIDE_FROM_ABI constexpr operator ::std::basic_string_view<_CharT, _Traits>() const noexcept
+  {
+    return ::std::basic_string_view<_CharT, _Traits>{__data_, __size_};
+  }
+
+  _CCCL_TEMPLATE(bool = true)
+  _CCCL_REQUIRES(is_same_v<_Traits, char_traits<_CharT>>)
+  _CCCL_HIDE_FROM_ABI constexpr operator ::std::basic_string_view<_CharT, ::std::char_traits<_CharT>>() const noexcept
+  {
+    return ::std::basic_string_view<_CharT, ::std::char_traits<_CharT>>{__data_, __size_};
+  }
+#endif // !_CCCL_COMPILER(NVRTC)
+
 private:
   enum class __assume_valid
   {
@@ -749,21 +778,32 @@ _CCCL_TEMPLATE(class _Range)
 _CCCL_REQUIRES(_CUDA_VRANGES::contiguous_range<_Range>)
 _CCCL_HOST_DEVICE basic_string_view(_Range&&) -> basic_string_view<_CUDA_VRANGES::range_value_t<_Range>>;
 
+#if !_CCCL_COMPILER(NVRTC)
+_CCCL_TEMPLATE(class _CharT, class _Traits)
+_CCCL_HOST_DEVICE basic_string_view(::std::basic_string_view<_CharT, _Traits>) -> basic_string_view<_CharT, _Traits>;
+
+_CCCL_TEMPLATE(class _CharT)
+_CCCL_HOST_DEVICE basic_string_view(::std::basic_string_view<_CharT, ::std::char_traits<_CharT>>)
+  -> basic_string_view<_CharT, char_traits<_CharT>>;
+#endif // !_CCCL_COMPILER(NVRTC)
+
 // operator <<
 
+#if !_CCCL_COMPILER(NVRTC)
 template <class _CharT, class _Traits>
 _CCCL_HIDE_FROM_ABI _CCCL_HOST ::std::basic_ostream<_CharT, _Traits>&
 operator<<(::std::basic_ostream<_CharT, _Traits>& __os, basic_string_view<_CharT, _Traits> __str)
 {
-  return __os << ::std::basic_string_view<_CharT, _Traits>{__str.data(), __str.size()};
+  return __os << ::std::basic_string_view<_CharT, _Traits>{__str};
 }
 
 template <class _CharT>
 _CCCL_HIDE_FROM_ABI _CCCL_HOST ::std::basic_ostream<_CharT, ::std::char_traits<_CharT>>& operator<<(
   ::std::basic_ostream<_CharT, ::std::char_traits<_CharT>>& __os, basic_string_view<_CharT, char_traits<_CharT>> __str)
 {
-  return __os << ::std::basic_string_view<_CharT, ::std::char_traits<_CharT>>{__str.data(), __str.size()};
+  return __os << ::std::basic_string_view<_CharT, ::std::char_traits<_CharT>>{__str};
 }
+#endif // !_CCCL_COMPILER(NVRTC)
 
 // literals
 
