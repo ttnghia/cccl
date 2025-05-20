@@ -778,10 +778,10 @@ _CCCL_REQUIRES(_CUDA_VRANGES::contiguous_range<_Range>)
 _CCCL_HOST_DEVICE basic_string_view(_Range&&) -> basic_string_view<_CUDA_VRANGES::range_value_t<_Range>>;
 
 #if !_CCCL_COMPILER(NVRTC)
-_CCCL_TEMPLATE(class _CharT)
+template <class _CharT>
 _CCCL_HOST_DEVICE basic_string_view(::std::basic_string_view<_CharT>) -> basic_string_view<_CharT>;
 
-_CCCL_TEMPLATE(class _CharT, class _Traits)
+template <class _CharT, class _Traits>
 _CCCL_HOST_DEVICE basic_string_view(::std::basic_string_view<_CharT, _Traits>) -> basic_string_view<_CharT, _Traits>;
 #endif // !_CCCL_COMPILER(NVRTC)
 
