@@ -69,6 +69,19 @@ _CCCL_CONCEPT __cccl_has_basic_sv_conv_operator =
   _CCCL_REQUIRES_EXPR((_Range, _CharT, _Traits), remove_cvref_t<_Range>& __d)(
     (__d.operator _CUDA_VSTD::basic_string_view<_CharT, _Traits>()));
 
+#if !_CCCL_COMPILER(NVRTC)
+template <class _Tp>
+inline constexpr bool __cccl_is_std_basic_string_view_v = false;
+template <class _Tp>
+inline constexpr bool __cccl_is_std_basic_string_view_v<const _Tp> = __cccl_is_std_basic_string_view_v<_Tp>;
+template <class _Tp>
+inline constexpr bool __cccl_is_std_basic_string_view_v<volatile _Tp> = __cccl_is_std_basic_string_view_v<_Tp>;
+template <class _Tp>
+inline constexpr bool __cccl_is_std_basic_string_view_v<const volatile _Tp> = __cccl_is_std_basic_string_view_v<_Tp>;
+template <class _CharT, class _Traits>
+inline constexpr bool __cccl_is_std_basic_string_view_v<::std::basic_string_view<_CharT, _Traits>> = true;
+#endif // !_CCCL_COMPILER(NVRTC)
+
 template <class _CharT, class _Traits>
 class basic_string_view
 {
@@ -774,7 +787,7 @@ _CCCL_REQUIRES(contiguous_iterator<_It> _CCCL_AND sized_sentinel_for<_End, _It>)
 _CCCL_HOST_DEVICE basic_string_view(_It, _End) -> basic_string_view<iter_value_t<_It>>;
 
 _CCCL_TEMPLATE(class _Range)
-_CCCL_REQUIRES(_CUDA_VRANGES::contiguous_range<_Range>)
+_CCCL_REQUIRES(_CUDA_VRANGES::contiguous_range<_Range> _CCCL_AND(!__cccl_is_std_basic_string_view_v<_Range>))
 _CCCL_HOST_DEVICE basic_string_view(_Range&&) -> basic_string_view<_CUDA_VRANGES::range_value_t<_Range>>;
 
 #if !_CCCL_COMPILER(NVRTC)

@@ -41,11 +41,11 @@ struct custom_type_traits
     : private std::char_traits<CharT>
     , private cuda::std::char_traits<CharT>
 {
-  using typename cuda::std::char_traits<CharT>::char_type;
-  using typename cuda::std::char_traits<CharT>::int_type;
-  using typename std::char_traits<CharT>::pos_type;
-  using typename std::char_traits<CharT>::off_type;
-  using typename std::char_traits<CharT>::state_type;
+  using char_type  = typename cuda::std::char_traits<CharT>::char_type;
+  using int_type   = typename cuda::std::char_traits<CharT>::int_type;
+  using pos_type   = typename std::char_traits<CharT>::pos_type;
+  using off_type   = typename std::char_traits<CharT>::off_type;
+  using state_type = typename std::char_traits<CharT>::state_type;
 
   using cuda::std::char_traits<CharT>::assign;
   using cuda::std::char_traits<CharT>::eq;
