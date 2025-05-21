@@ -81,7 +81,7 @@ from cuda.cooperative.experimental._typing import (
 def striped_to_blocked(
     dtype: DtypeType,
     threads_per_block: DimType,
-    items_per_thread: int = 1,
+    items_per_thread: int,
     warp_time_slicing: bool = False,
     methods: dict = None,
 ):
@@ -99,7 +99,7 @@ def striped_to_blocked(
 
     :param items_per_thread: Supplies the number of items partitioned onto each
         thread.
-    :type  items_per_thread: int, optional
+    :type  items_per_thread: int
 
     :param warp_time_slicing: Supplies a boolean indicating whether warp
         time-slicing is used.  If set to `True`, the algorithm will only use
@@ -110,14 +110,10 @@ def striped_to_blocked(
     :type warp_time_slicing: bool, optional
 
     :param methods: Optionally supplies a dictionary of methods to use for
-        user-defined types.  The default is *None*.  Not supported if
-        ``items_per_thread > 1``.
+        user-defined types.  The default is *None*.
     :type  methods: dict, optional
 
     :raises ValueError: If ``items_per_thread`` is less than 1.
-
-    :raises ValueError: If ``items_per_thread`` is greater than 1 and
-        ``methods`` is not *None* (i.e. a user-defined type is being used).
 
     :returns: An :py:class:`cuda.cooperative.experimental._types.Invocable`
         object representing the specialized kernel that call be called from
@@ -127,11 +123,6 @@ def striped_to_blocked(
     # Validate initial parameters.
     if items_per_thread < 1:
         raise ValueError("items_per_thread must be greater than or equal to 1")
-
-    if items_per_thread > 1 and methods is not None:
-        raise ValueError(
-            "user-defined types are not supported for items_per_thread > 1"
-        )
 
     # Normalize parameters.
     dim = normalize_dim_param(threads_per_block)
