@@ -26,9 +26,7 @@
 #include <cuda/std/__concepts/convertible_to.h>
 #include <cuda/std/__functional/bind_back.h>
 #include <cuda/std/__fwd/span.h>
-#if defined(_LIBCUDACXX_HAS_STRING_VIEW)
-#  include <cuda/std/__fwd/string_view.h>
-#endif // _LIBCUDACXX_HAS_STRING_VIEW
+#include <cuda/std/__fwd/string_view.h>
 #include <cuda/std/__iterator/concepts.h>
 #include <cuda/std/__iterator/counted_iterator.h>
 #include <cuda/std/__iterator/default_sentinel.h>
@@ -316,10 +314,8 @@ inline constexpr bool __is_passthrough_specialization = false;
 template <class _Tp, size_t _Extent>
 inline constexpr bool __is_passthrough_specialization<span<_Tp, _Extent>> = true;
 
-#if defined(_LIBCUDACXX_HAS_STRING_VIEW)
 template <class _CharT, class _Traits>
 inline constexpr bool __is_passthrough_specialization<basic_string_view<_CharT, _Traits>> = true;
-#endif // _LIBCUDACXX_HAS_STRING_VIEW
 
 template <class _Iter, class _Sent, _CUDA_VRANGES::subrange_kind _Kind>
 inline constexpr bool __is_passthrough_specialization<_CUDA_VRANGES::subrange<_Iter, _Sent, _Kind>> = true;
@@ -339,13 +335,11 @@ struct __passthrough_type<span<_Tp, _Extent>>
   using type _CCCL_NODEBUG_ALIAS = span<_Tp>;
 };
 
-#if defined(_LIBCUDACXX_HAS_STRING_VIEW)
 template <class _CharT, class _Traits>
 struct __passthrough_type<basic_string_view<_CharT, _Traits>>
 {
   using type = _CCCL_NODEBUG_ALIAS basic_string_view<_CharT, _Traits>;
 };
-#endif //_LIBCUDACXX_HAS_STRING_VIEW
 
 template <class _Iter, class _Sent, _CUDA_VRANGES::subrange_kind _Kind>
 struct __passthrough_type<_CUDA_VRANGES::subrange<_Iter, _Sent, _Kind>, void_t<typename _CUDA_VRANGES::subrange<_Iter>>>
