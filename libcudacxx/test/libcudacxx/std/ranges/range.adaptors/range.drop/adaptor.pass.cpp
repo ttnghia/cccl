@@ -15,9 +15,7 @@
 #include <cuda/std/concepts>
 #include <cuda/std/ranges>
 #include <cuda/std/span>
-#if defined(_LIBCUDACXX_HAS_STRING_VIEW)
-#  include <cuda/std/string_view>
-#endif // _LIBCUDACXX_HAS_STRING_VIEW
+#include <cuda/std/string_view>
 #include <cuda/std/utility>
 
 #include "test_iterators.h"
@@ -202,7 +200,6 @@ __host__ __device__ TEST_CONSTEXPR_CXX20 bool test()
     assert(result.size() == 5);
   }
 
-#if defined(_LIBCUDACXX_HAS_STRING_VIEW)
   // `views::drop(string_view, n)` returns a `string_view`.
   {
     {
@@ -219,7 +216,6 @@ __host__ __device__ TEST_CONSTEXPR_CXX20 bool test()
       assert(result.size() == 4);
     }
   }
-#endif // _LIBCUDACXX_HAS_STRING_VIEW
 
   // `views::drop(iota_view, n)` returns an `iota_view`.
   {
@@ -274,9 +270,7 @@ __host__ __device__ TEST_CONSTEXPR_CXX20 bool test()
   // When the size of the input range `s` is shorter than `n`, an `empty_view` is returned.
   {
     test_small_range(cuda::std::span(buf));
-#if defined(_LIBCUDACXX_HAS_STRING_VIEW)
     test_small_range(cuda::std::string_view("abcdef"));
-#endif // _LIBCUDACXX_HAS_STRING_VIEW
     test_small_range(cuda::std::ranges::subrange(buf, buf + N));
     test_small_range(cuda::std::views::iota(1, 8));
   }

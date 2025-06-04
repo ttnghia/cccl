@@ -25,9 +25,7 @@
 #include <cuda/std/__concepts/convertible_to.h>
 #include <cuda/std/__functional/bind_back.h>
 #include <cuda/std/__fwd/span.h>
-#if defined(_LIBCUDACXX_HAS_STRING_VIEW)
-#  include <cuda/std/__fwd/string_view.h>
-#endif // _LIBCUDACXX_HAS_STRING_VIEW
+#include <cuda/std/__fwd/string_view.h>
 #include <cuda/std/__iterator/concepts.h>
 #include <cuda/std/__iterator/distance.h>
 #include <cuda/std/__iterator/iterator_traits.h>
@@ -207,10 +205,8 @@ inline constexpr bool __is_passthrough_specialization = false;
 template <class _Tp, size_t _Extent>
 inline constexpr bool __is_passthrough_specialization<span<_Tp, _Extent>> = true;
 
-#if defined(_LIBCUDACXX_HAS_STRING_VIEW)
 template <class _CharT, class _Traits>
 inline constexpr bool __is_passthrough_specialization<basic_string_view<_CharT, _Traits>> = true;
-#endif
 
 template <class _Np, class _Bound>
 inline constexpr bool __is_passthrough_specialization<iota_view<_Np, _Bound>> = true;
@@ -235,13 +231,11 @@ struct __passthrough_type<span<_Tp, _Extent>>
   using type = span<_Tp>;
 };
 
-#if defined(_LIBCUDACXX_HAS_STRING_VIEW)
 template <class _CharT, class _Traits>
 struct __passthrough_type<basic_string_view<_CharT, _Traits>>
 {
   using type = basic_string_view<_CharT, _Traits>;
 };
-#endif
 
 template <class _Np, class _Bound>
 struct __passthrough_type<iota_view<_Np, _Bound>>
