@@ -67,7 +67,7 @@ runs:
         AWS_SESSION_TOKEN: "${{env.AWS_SESSION_TOKEN}}"
         AWS_SECRET_ACCESS_KEY: "${{env.AWS_SECRET_ACCESS_KEY}}"
       run: |
-        cat <<"EOF" > "$RUNNER_TEMP/ci.sh"
+        cat <<"EOF" > ci.sh
         #! /usr/bin/env bash
         set -euo pipefail
         echo -e "\e[1;34mRunning as '$(whoami)' user in $(pwd):\e[0m"
@@ -92,7 +92,7 @@ runs:
         fi
         EOF
 
-        chmod +x "$RUNNER_TEMP/ci.sh"
+        chmod +x ci.sh
 
         # The devcontainer will mount this path to the home directory:
         readonly aws_dir="${{github.workspace}}/.aws"
