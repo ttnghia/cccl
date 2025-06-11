@@ -186,7 +186,7 @@ runs:
         # Never fallback to building locally, fail instead
         fallback_to_local_compile = false
 
-        scheduler_url = "https://${ARCH}.${OS,,}.sccache.gha-runners.nvidia.com"
+        scheduler_url = "https://${ARCH}.${OS,,}.sccache.rapids.nvidia.com"
 
         # Build cluster auth
         [dist.auth]
