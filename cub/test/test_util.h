@@ -47,6 +47,8 @@
 
 #include <cuda/std/__algorithm_>
 
+#include <nv/target>
+
 #include <cfloat>
 #include <cmath>
 #include <cstddef>
@@ -60,7 +62,6 @@
 #include "mersenne.h"
 #include <c2h/extended_types.h>
 #include <c2h/test_util_vec.h>
-#include <nv/target>
 
 /******************************************************************************
  * Type conversion macros
@@ -328,7 +329,21 @@ struct CommandLineArgs
         exit(1);
       }
 
-      device_giga_bandwidth = float(deviceProp.memoryBusWidth) * deviceProp.memoryClockRate * 2 / 8 / 1000 / 1000;
+      int memoryClockRate{};
+      error = CubDebug(cudaDeviceGetAttribute(&memoryClockRate, cudaDevAttrMemoryClockRate, dev));
+      if (error)
+      {
+        break;
+      }
+
+      int memoryBusWidth{};
+      error = CubDebug(cudaDeviceGetAttribute(&memoryBusWidth, cudaDevAttrGlobalMemoryBusWidth, dev));
+      if (error)
+      {
+        break;
+      }
+
+      device_giga_bandwidth = float(memoryBusWidth) * memoryClockRate * 2 / 8 / 1000 / 1000;
 
       if (!CheckCmdLineFlag("quiet"))
       {
@@ -344,7 +359,7 @@ struct CommandLineArgs
           (unsigned long long) device_free_physmem / 1024 / 1024,
           (unsigned long long) device_total_physmem / 1024 / 1024,
           device_giga_bandwidth,
-          deviceProp.memoryClockRate,
+          memoryClockRate,
           (deviceProp.ECCEnabled) ? "on" : "off");
         fflush(stdout);
       }

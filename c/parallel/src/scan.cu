@@ -22,6 +22,8 @@
 #include <string>
 #include <type_traits>
 
+#include <nvrtc.h>
+
 #include "cub/util_device.cuh"
 #include "kernels/iterators.h"
 #include "kernels/operators.h"
@@ -31,7 +33,6 @@
 #include "util/scan_tile_state.h"
 #include "util/types.h"
 #include <cccl/c/scan.h>
-#include <nvrtc.h>
 #include <nvrtc/command_list.h>
 #include <nvrtc/ltoir_list_appender.h>
 
@@ -295,8 +296,9 @@ struct device_scan_policy {{
 
     const std::string arch = std::format("-arch=sm_{0}{1}", cc_major, cc_minor);
 
-    constexpr size_t num_args  = 7;
-    const char* args[num_args] = {arch.c_str(), cub_path, thrust_path, libcudacxx_path, ctk_path, "-rdc=true", "-dlto"};
+    constexpr size_t num_args  = 8;
+    const char* args[num_args] = {
+      arch.c_str(), cub_path, thrust_path, libcudacxx_path, ctk_path, "-rdc=true", "-dlto", "-DCUB_DISABLE_CDP"};
 
     constexpr size_t num_lto_args   = 2;
     const char* lopts[num_lto_args] = {"-lto", arch.c_str()};
@@ -310,16 +312,16 @@ struct device_scan_policy {{
     appender.add_iterator_definition(output_it);
 
     nvrtc_link_result result =
-      make_nvrtc_command_list()
-        .add_program(nvrtc_translation_unit{src.c_str(), name})
-        .add_expression({init_kernel_name})
-        .add_expression({scan_kernel_name})
-        .compile_program({args, num_args})
-        .get_name({init_kernel_name, init_kernel_lowered_name})
-        .get_name({scan_kernel_name, scan_kernel_lowered_name})
-        .cleanup_program()
-        .add_link_list(ltoir_list)
-        .finalize_program(num_lto_args, lopts);
+      begin_linking_nvrtc_program(num_lto_args, lopts)
+        ->add_program(nvrtc_translation_unit{src.c_str(), name})
+        ->add_expression({init_kernel_name})
+        ->add_expression({scan_kernel_name})
+        ->compile_program({args, num_args})
+        ->get_name({init_kernel_name, init_kernel_lowered_name})
+        ->get_name({scan_kernel_name, scan_kernel_lowered_name})
+        ->link_program()
+        ->add_link_list(ltoir_list)
+        ->finalize_program();
 
     cuLibraryLoadData(&build_ptr->library, result.data.get(), nullptr, nullptr, 0, nullptr, nullptr, 0);
     check(cuLibraryGetKernel(&build_ptr->init_kernel, build_ptr->library, init_kernel_lowered_name.c_str()));
@@ -367,7 +369,8 @@ CUresult cccl_device_scan(
 
     CUdevice cu_device;
     check(cuCtxGetDevice(&cu_device));
-    auto cuda_error = cub::DispatchScan<
+
+    auto exec_status = cub::DispatchScan<
       indirect_arg_t,
       indirect_arg_t,
       indirect_arg_t,
@@ -390,11 +393,8 @@ CUresult cccl_device_scan(
         {build},
         cub::detail::CudaDriverLauncherFactory{cu_device, build.cc},
         {scan::get_accumulator_type(op, d_in, init)});
-    if (cuda_error != cudaSuccess)
-    {
-      const char* errorString = cudaGetErrorString(cuda_error); // Get the error string
-      std::cerr << "CUDA error: " << errorString << std::endl;
-    }
+
+    error = static_cast<CUresult>(exec_status);
   }
   catch (const std::exception& exc)
   {

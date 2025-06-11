@@ -127,7 +127,7 @@ merge_sort_runtime_tuning_policy get_policy(int cc, int key_size)
   // TODO: we hardcode this value in order to make sure that the merge_sort test does not fail due to the memory op
   // assertions. This currently happens when we pass in items and keys of type uint8_t or int16_t, and for the custom
   // types test as well. This will be fixed after https://github.com/NVIDIA/cccl/issues/3570 is resolved.
-  items_per_thread = 2;
+  items_per_thread = 1;
 
   return {block_size, items_per_thread, block_size * items_per_thread};
 }
@@ -408,8 +408,9 @@ struct device_merge_sort_vsmem_helper {{
 
     const std::string arch = std::format("-arch=sm_{0}{1}", cc_major, cc_minor);
 
-    constexpr size_t num_args  = 7;
-    const char* args[num_args] = {arch.c_str(), cub_path, thrust_path, libcudacxx_path, ctk_path, "-rdc=true", "-dlto"};
+    constexpr size_t num_args  = 8;
+    const char* args[num_args] = {
+      arch.c_str(), cub_path, thrust_path, libcudacxx_path, ctk_path, "-rdc=true", "-dlto", "-DCUB_DISABLE_CDP"};
 
     constexpr size_t num_lto_args   = 2;
     const char* lopts[num_lto_args] = {"-lto", arch.c_str()};
@@ -426,18 +427,18 @@ struct device_merge_sort_vsmem_helper {{
     list_appender.add_iterator_definition(output_items_it);
 
     nvrtc_link_result result =
-      make_nvrtc_command_list()
-        .add_program(nvrtc_translation_unit{src.c_str(), name})
-        .add_expression({block_sort_kernel_name})
-        .add_expression({partition_kernel_name})
-        .add_expression({merge_kernel_name})
-        .compile_program({args, num_args})
-        .get_name({block_sort_kernel_name, block_sort_kernel_lowered_name})
-        .get_name({partition_kernel_name, partition_kernel_lowered_name})
-        .get_name({merge_kernel_name, merge_kernel_lowered_name})
-        .cleanup_program()
-        .add_link_list(ltoir_list)
-        .finalize_program(num_lto_args, lopts);
+      begin_linking_nvrtc_program(num_lto_args, lopts)
+        ->add_program(nvrtc_translation_unit{src.c_str(), name})
+        ->add_expression({block_sort_kernel_name})
+        ->add_expression({partition_kernel_name})
+        ->add_expression({merge_kernel_name})
+        ->compile_program({args, num_args})
+        ->get_name({block_sort_kernel_name, block_sort_kernel_lowered_name})
+        ->get_name({partition_kernel_name, partition_kernel_lowered_name})
+        ->get_name({merge_kernel_name, merge_kernel_lowered_name})
+        ->link_program()
+        ->add_link_list(ltoir_list)
+        ->finalize_program();
 
     cuLibraryLoadData(&build_ptr->library, result.data.get(), nullptr, nullptr, 0, nullptr, nullptr, 0);
     check(
@@ -492,7 +493,7 @@ CUresult cccl_device_merge_sort(
     CUdevice cu_device;
     check(cuCtxGetDevice(&cu_device));
 
-    cub::DispatchMergeSort<
+    auto exec_status = cub::DispatchMergeSort<
       indirect_arg_t,
       indirect_arg_t,
       indirect_arg_t,
@@ -516,6 +517,8 @@ CUresult cccl_device_merge_sort(
                                 {build},
                                 cub::detail::CudaDriverLauncherFactory{cu_device, build.cc},
                                 {d_out_keys.value_type.size});
+
+    error = static_cast<CUresult>(exec_status);
   }
   catch (const std::exception& exc)
   {

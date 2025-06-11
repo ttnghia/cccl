@@ -25,16 +25,18 @@
 #include <cuda/std/__algorithm/max_element.h>
 #include <cuda/std/initializer_list>
 
-_CCCL_PUSH_MACROS
+#include <cuda/std/__cccl/prologue.h>
 
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _Tp, class _Compare>
 [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr const _Tp& max(const _Tp& __a, const _Tp& __b, _Compare __comp)
 {
   return __comp(__a, __b) ? __b : __a;
 }
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _Tp>
 [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr const _Tp& max(const _Tp& __a, const _Tp& __b)
 {
@@ -55,6 +57,6 @@ template <class _Tp>
 
 _LIBCUDACXX_END_NAMESPACE_STD
 
-_CCCL_POP_MACROS
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX___ALGORITHM_MAX_H

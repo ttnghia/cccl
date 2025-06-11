@@ -29,7 +29,10 @@
 #elif defined(_CCCL_IMPLICIT_SYSTEM_HEADER_MSVC)
 #  pragma system_header
 #endif // no system header
+
 #include <thrust/detail/execution_policy.h>
+
+#include <cuda/std/iterator>
 
 THRUST_NAMESPACE_BEGIN
 
@@ -79,7 +82,7 @@ THRUST_NAMESPACE_BEGIN
 //!
 //! int data[10] = {-5, 0, 2, -3, 2, 4, 0, -1, 2, 8};
 //!
-//! thrust::negate<int> op;
+//! ::cuda::std::negate<int> op;
 //! thrust::transform(thrust::host, data, data + 10, data, op); // in-place transformation
 //!
 //! // data is now {5, 0, -2, 3, -2, -4, 0, 1, -2, -8};
@@ -130,7 +133,7 @@ _CCCL_HOST_DEVICE OutputIterator transform(
 //!
 //!  int data[10] = {-5, 0, 2, -3, 2, 4, 0, -1, 2, 8};
 //!
-//!  thrust::negate<int> op;
+//!  ::cuda::std::negate<int> op;
 //!  thrust::transform(data, data + 10, data, op); // in-place transformation
 //!
 //!  // data is now {5, 0, -2, 3, -2, -4, 0, 1, -2, -8};
@@ -190,7 +193,7 @@ OutputIterator transform(InputIterator first, InputIterator last, OutputIterator
 //! int input2[6] = { 3,  6, -2,  1,  2,  3};
 //! int output[6];
 //!
-//! thrust::plus<int> op;
+//! ::cuda::std::plus<int> op;
 //! thrust::transform(thrust::host, input1, input1 + 6, input2, output, op);
 //!
 //! // output is now {-2,  6,  0,  4,  4,  7};
@@ -253,7 +256,7 @@ _CCCL_HOST_DEVICE OutputIterator transform(
 //! int input2[6] = { 3,  6, -2,  1,  2,  3};
 //! int output[6];
 //!
-//! thrust::plus<int> op;
+//! ::cuda::std::plus<int> op;
 //! thrust::transform(input1, input1 + 6, input2, output, op);
 //!
 //! // output is now {-2,  6,  0,  4,  4,  7};
@@ -325,7 +328,7 @@ transform(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, Ou
  *    }
  *  };
  *
- *  thrust::negate<int> op;
+ *  ::cuda::std::negate<int> op;
  *
  *  // negate odd elements
  *  thrust::transform_if(thrust::host, data, data + 10, data, op, is_odd()); // in-place transformation
@@ -398,7 +401,7 @@ _CCCL_HOST_DEVICE ForwardIterator transform_if(
  *    }
  *  };
  *
- *  thrust::negate<int> op;
+ *  ::cuda::std::negate<int> op;
  *
  *  // negate odd elements
  *  thrust::transform_if(data, data + 10, data, op, is_odd()); // in-place transformation
@@ -466,7 +469,7 @@ transform_if(InputIterator first, InputIterator last, ForwardIterator result, Un
  *  int data[10]    = {-5, 0, 2, -3, 2, 4, 0, -1, 2, 8};
  *  int stencil[10] = { 1, 0, 1,  0, 1, 0, 1,  0, 1, 0};
  *
- *  thrust::negate<int> op;
+ *  ::cuda::std::negate<int> op;
  *  ::cuda::std::identity identity;
  *
  *  thrust::transform_if(thrust::host, data, data + 10, stencil, data, op, identity); // in-place transformation
@@ -538,7 +541,7 @@ _CCCL_HOST_DEVICE ForwardIterator transform_if(
  *  int data[10]    = {-5, 0, 2, -3, 2, 4, 0, -1, 2, 8};
  *  int stencil[10] = { 1, 0, 1,  0, 1, 0, 1,  0, 1, 0};
  *
- *  thrust::negate<int> op;
+ *  ::cuda::std::negate<int> op;
  *  ::cuda::std::identity identity;
  *
  *  thrust::transform_if(data, data + 10, stencil, data, op, identity); // in-place transformation
@@ -620,7 +623,7 @@ ForwardIterator transform_if(
  *  int stencil[8] = { 1,  0,  1,  0,  1,  0};
  *  int output[6];
  *
- *  thrust::plus<int> op;
+ *  ::cuda::std::plus<int> op;
  *  ::cuda::std::identity identity;
  *
  *  thrust::transform_if(thrust::host, input1, input1 + 6, input2, stencil, output, op, identity);
@@ -700,7 +703,7 @@ _CCCL_HOST_DEVICE ForwardIterator transform_if(
  *  int stencil[8] = { 1,  0,  1,  0,  1,  0};
  *  int output[6];
  *
- *  thrust::plus<int> op;
+ *  ::cuda::std::plus<int> op;
  *  ::cuda::std::identity identity;
  *
  *  thrust::transform_if(input1, input1 + 6, input2, stencil, output, op, identity);
@@ -724,6 +727,173 @@ ForwardIterator transform_if(
   ForwardIterator result,
   BinaryFunction binary_op,
   Predicate pred);
+
+//! Like \ref transform, but uses an element count instead of an iterator to the last element of the input sequence.
+template <typename DerivedPolicy, typename InputIterator, typename OutputIterator, typename UnaryFunction>
+_CCCL_HOST_DEVICE OutputIterator transform_n(
+  const detail::execution_policy_base<DerivedPolicy>& exec,
+  InputIterator first,
+  ::cuda::std::iter_difference_t<InputIterator> count,
+  OutputIterator result,
+  UnaryFunction op)
+{
+  _CCCL_NVTX_RANGE_SCOPE("thrust::transform_n");
+  return thrust::transform(exec, first, first + count, result, op);
+}
+
+//! Like \ref transform, but uses an element count instead of an iterator to the last element of the input sequence.
+template <typename InputIterator, typename OutputIterator, typename UnaryFunction>
+OutputIterator transform_n(
+  InputIterator first, ::cuda::std::iter_difference_t<InputIterator> count, OutputIterator result, UnaryFunction op)
+{
+  _CCCL_NVTX_RANGE_SCOPE("thrust::transform_n");
+  return thrust::transform(first, first + count, result, op);
+}
+
+//! Like \ref transform, but uses an element count instead of an iterator to the last element of the input sequence.
+template <typename DerivedPolicy,
+          typename InputIterator1,
+
+          typename InputIterator2,
+          typename OutputIterator,
+          typename BinaryFunction>
+_CCCL_HOST_DEVICE OutputIterator transform_n(
+  const detail::execution_policy_base<DerivedPolicy>& exec,
+  InputIterator1 first1,
+  ::cuda::std::iter_difference_t<InputIterator1> count,
+  InputIterator2 first2,
+  OutputIterator result,
+  BinaryFunction op)
+{
+  _CCCL_NVTX_RANGE_SCOPE("thrust::transform_n");
+  return thrust::transform(exec, first1, first1 + count, first2, result, op);
+}
+
+//! Like \ref transform, but uses an element count instead of an iterator to the last element of the input sequence.
+template <typename InputIterator1, typename InputIterator2, typename OutputIterator, typename BinaryFunction>
+OutputIterator transform_n(
+  InputIterator1 first1,
+  ::cuda::std::iter_difference_t<InputIterator1> count,
+  InputIterator2 first2,
+  OutputIterator result,
+  BinaryFunction op)
+{
+  _CCCL_NVTX_RANGE_SCOPE("thrust::transform_n");
+  return thrust::transform(first1, first1 + count, first2, result, op);
+}
+
+//! Like \ref transform_if, but uses an element count instead of an iterator to the last element of the input sequence.
+template <typename DerivedPolicy,
+          typename InputIterator,
+
+          typename ForwardIterator,
+          typename UnaryFunction,
+          typename Predicate>
+_CCCL_HOST_DEVICE ForwardIterator transform_if_n(
+  const detail::execution_policy_base<DerivedPolicy>& exec,
+  InputIterator first,
+  ::cuda::std::iter_difference_t<InputIterator> count,
+  ForwardIterator result,
+  UnaryFunction op,
+  Predicate pred)
+{
+  _CCCL_NVTX_RANGE_SCOPE("thrust::transform_if_n");
+  return thrust::transform(exec, first, first + count, result, op, pred);
+}
+
+//! Like \ref transform_if, but uses an element count instead of an iterator to the last element of the input sequence.
+template <typename InputIterator, typename ForwardIterator, typename UnaryFunction, typename Predicate>
+ForwardIterator transform_if_n(
+  InputIterator first,
+  ::cuda::std::iter_difference_t<InputIterator> count,
+  ForwardIterator result,
+  UnaryFunction op,
+  Predicate pred)
+{
+  _CCCL_NVTX_RANGE_SCOPE("thrust::transform_if_n");
+  return thrust::transform_if(first, first + count, result, op, pred);
+}
+
+//! Like \ref transform_if, but uses an element count instead of an iterator to the last element of the input sequence.
+template <typename DerivedPolicy,
+          typename InputIterator1,
+
+          typename InputIterator2,
+          typename ForwardIterator,
+          typename UnaryFunction,
+          typename Predicate>
+_CCCL_HOST_DEVICE ForwardIterator transform_if_n(
+  const detail::execution_policy_base<DerivedPolicy>& exec,
+  InputIterator1 first,
+  ::cuda::std::iter_difference_t<InputIterator1> count,
+  InputIterator2 stencil,
+  ForwardIterator result,
+  UnaryFunction op,
+  Predicate pred)
+{
+  _CCCL_NVTX_RANGE_SCOPE("thrust::transform_if_n");
+  return thrust::transform_if(exec, first, first + count, stencil, result, op, pred);
+}
+
+//! Like \ref transform_if, but uses an element count instead of an iterator to the last element of the input sequence.
+template <typename InputIterator1,
+          typename InputIterator2,
+          typename ForwardIterator,
+          typename UnaryFunction,
+          typename Predicate>
+ForwardIterator transform_if_n(
+  InputIterator1 first,
+  ::cuda::std::iter_difference_t<InputIterator1> count,
+  InputIterator2 stencil,
+  ForwardIterator result,
+  UnaryFunction op,
+  Predicate pred)
+{
+  _CCCL_NVTX_RANGE_SCOPE("thrust::transform_if_n");
+  return thrust::transform_if(first, first + count, stencil, result, op, pred);
+}
+
+//! Like \ref transform_if, but uses an element count instead of an iterator to the last element of the input sequence.
+template <typename DerivedPolicy,
+          typename InputIterator1,
+          typename InputIterator2,
+          typename InputIterator3,
+          typename ForwardIterator,
+          typename BinaryFunction,
+          typename Predicate>
+_CCCL_HOST_DEVICE ForwardIterator transform_if_n(
+  const detail::execution_policy_base<DerivedPolicy>& exec,
+  InputIterator1 first1,
+  ::cuda::std::iter_difference_t<InputIterator1> count,
+  InputIterator2 first2,
+  InputIterator3 stencil,
+  ForwardIterator result,
+  BinaryFunction binary_op,
+  Predicate pred)
+{
+  _CCCL_NVTX_RANGE_SCOPE("thrust::transform_if_n");
+  return thrust::transform_if(exec, first1, first1 + count, first2, stencil, result, binary_op, pred);
+}
+
+//! Like \ref transform_if, but uses an element count instead of an iterator to the last element of the input sequence.
+template <typename InputIterator1,
+          typename InputIterator2,
+          typename InputIterator3,
+          typename ForwardIterator,
+          typename BinaryFunction,
+          typename Predicate>
+ForwardIterator transform_if_n(
+  InputIterator1 first1,
+  ::cuda::std::iter_difference_t<InputIterator1> count,
+  InputIterator2 first2,
+  InputIterator3 stencil,
+  ForwardIterator result,
+  BinaryFunction binary_op,
+  Predicate pred)
+{
+  _CCCL_NVTX_RANGE_SCOPE("thrust::transform_if_n");
+  return thrust::transform_if(first1, first1 + count, first2, stencil, result, binary_op, pred);
+}
 
 /*! \} // end transformations
  */

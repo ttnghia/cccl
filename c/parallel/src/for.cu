@@ -94,8 +94,9 @@ CUresult cccl_device_for_build(
 
     const std::string arch = std::format("-arch=sm_{0}{1}", cc_major, cc_minor);
 
-    constexpr size_t num_args  = 7;
-    const char* args[num_args] = {arch.c_str(), cub_path, thrust_path, libcudacxx_path, ctk_path, "-rdc=true", "-dlto"};
+    constexpr size_t num_args  = 8;
+    const char* args[num_args] = {
+      arch.c_str(), cub_path, thrust_path, libcudacxx_path, ctk_path, "-rdc=true", "-dlto", "-DCUB_DISABLE_CDP"};
 
     constexpr size_t num_lto_args   = 2;
     const char* lopts[num_lto_args] = {"-lto", arch.c_str()};
@@ -103,25 +104,25 @@ CUresult cccl_device_for_build(
     std::string lowered_name;
 
     auto cl =
-      make_nvrtc_command_list()
-        .add_program(nvrtc_translation_unit{device_for_kernel, name})
-        .add_expression({for_kernel_name})
-        .compile_program({args, num_args})
-        .get_name({for_kernel_name, lowered_name})
-        .cleanup_program()
-        .add_link({op.ltoir, op.ltoir_size});
+      begin_linking_nvrtc_program(num_lto_args, lopts)
+        ->add_program(nvrtc_translation_unit{device_for_kernel, name})
+        ->add_expression({for_kernel_name})
+        ->compile_program({args, num_args})
+        ->get_name({for_kernel_name, lowered_name})
+        ->link_program()
+        ->add_link({op.ltoir, op.ltoir_size});
 
     nvrtc_link_result result{};
 
     if (cccl_iterator_kind_t::CCCL_ITERATOR == d_data.type)
     {
-      result = cl.add_link({d_data.advance.ltoir, d_data.advance.ltoir_size})
-                 .add_link({d_data.dereference.ltoir, d_data.dereference.ltoir_size})
-                 .finalize_program(num_lto_args, lopts);
+      result = cl->add_link({d_data.advance.ltoir, d_data.advance.ltoir_size})
+                 ->add_link({d_data.dereference.ltoir, d_data.dereference.ltoir_size})
+                 ->finalize_program();
     }
     else
     {
-      result = cl.finalize_program(num_lto_args, lopts);
+      result = cl->finalize_program();
     }
 
     cuLibraryLoadData(&build_ptr->library, result.data.get(), nullptr, nullptr, 0, nullptr, nullptr, 0);
@@ -146,8 +147,9 @@ CUresult cccl_device_for(
 
   try
   {
-    pushed = try_push_context();
-    Invoke(d_data, num_items, op, build.cc, (CUfunction) build.static_kernel, stream);
+    pushed           = try_push_context();
+    auto exec_status = Invoke(d_data, num_items, op, build.cc, (CUfunction) build.static_kernel, stream);
+    error            = static_cast<CUresult>(exec_status);
   }
   catch (...)
   {

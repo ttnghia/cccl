@@ -46,6 +46,8 @@
 #  include <cuda/std/cstddef>
 #  include <cuda/std/tuple>
 
+#  include <cuda/std/__cccl/prologue.h>
+
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
 template <class _Tp>
@@ -129,7 +131,7 @@ struct __mu_return2
 template <class _Ti, class _Uj>
 struct __mu_return2<true, _Ti, _Uj>
 {
-  using type = __tuple_element_t<is_placeholder<_Ti>::value - 1, _Uj>;
+  using type = tuple_element_t<is_placeholder<_Ti>::value - 1, _Uj>;
 };
 
 template <class _Ti, class _Uj>
@@ -138,12 +140,12 @@ enable_if_t<0 < is_placeholder<_Ti>::value, typename __mu_return2<0 < is_placeho
 __mu(_Ti&, _Uj& __uj)
 {
   const size_t _Indx = is_placeholder<_Ti>::value - 1;
-  return _CUDA_VSTD::forward<__tuple_element_t<_Indx, _Uj>>(_CUDA_VSTD::get<_Indx>(__uj));
+  return _CUDA_VSTD::forward<tuple_element_t<_Indx, _Uj>>(_CUDA_VSTD::get<_Indx>(__uj));
 }
 
 template <class _Ti, class _Uj>
 _LIBCUDACXX_HIDE_FROM_ABI
-enable_if_t<!is_bind_expression<_Ti>::value && is_placeholder<_Ti>::value == 0 && !__is_reference_wrapper<_Ti>::value,
+enable_if_t<!is_bind_expression<_Ti>::value && is_placeholder<_Ti>::value == 0 && !__cccl_is_reference_wrapper_v<_Ti>,
             _Ti&>
 __mu(_Ti& __ti, _Uj&)
 {
@@ -173,7 +175,7 @@ struct __mu_return_impl<_Ti, false, true, false, tuple<_Uj...>>
 template <class _Ti, class _TupleUj>
 struct __mu_return_impl<_Ti, false, false, true, _TupleUj>
 {
-  using type = __tuple_element_t<is_placeholder<_Ti>::value - 1, _TupleUj>&&;
+  using type = tuple_element_t<is_placeholder<_Ti>::value - 1, _TupleUj>&&;
 };
 
 template <class _Ti, class _TupleUj>
@@ -192,7 +194,7 @@ template <class _Ti, class _TupleUj>
 struct __mu_return
     : public __mu_return_impl<
         _Ti,
-        __is_reference_wrapper<_Ti>::value,
+        __cccl_is_reference_wrapper_v<_Ti>,
         is_bind_expression<_Ti>::value,
         0 < is_placeholder<_Ti>::value && is_placeholder<_Ti>::value <= tuple_size<_TupleUj>::value,
         _TupleUj>
@@ -342,6 +344,8 @@ bind(_Fp&& __f, _BoundArgs&&... __bound_args)
 }
 
 _LIBCUDACXX_END_NAMESPACE_STD
+
+#  include <cuda/std/__cccl/epilogue.h>
 
 #endif // __cuda_std__
 

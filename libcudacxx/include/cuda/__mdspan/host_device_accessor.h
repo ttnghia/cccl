@@ -21,10 +21,7 @@
 #  pragma system_header
 #endif // no system header
 
-#if !_CCCL_HAS_CUDA_COMPILER || _CCCL_CUDA_COMPILER(CLANG)
-#  include <cuda_runtime_api.h>
-#endif // _CCCL_CUDA_COMPILER(CLANG)
-
+#include <cuda/__memory/address_space.h>
 #include <cuda/std/__concepts/concept_macros.h>
 #include <cuda/std/__cuda/api_wrapper.h>
 #include <cuda/std/__iterator/concepts.h>
@@ -37,6 +34,8 @@
 #include <cuda/std/__utility/declval.h>
 #include <cuda/std/cassert>
 #include <cuda/std/cstddef>
+
+#include <cuda/std/__cccl/prologue.h>
 
 _LIBCUDACXX_BEGIN_NAMESPACE_CUDA
 
@@ -105,6 +104,7 @@ class __host_accessor : public _Accessor
   [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI static constexpr bool
   __is_host_accessible_pointer([[maybe_unused]] __data_handle_type __p) noexcept
   {
+#if _CCCL_HAS_CTK()
     if constexpr (_CUDA_VSTD::contiguous_iterator<__data_handle_type>)
     {
       ::cudaPointerAttributes __ptr_attrib{};
@@ -113,6 +113,7 @@ class __host_accessor : public _Accessor
       return __ptr_attrib.hostPointer != nullptr || __ptr_attrib.type == ::cudaMemoryTypeUnregistered;
     }
     else
+#endif // _CCCL_HAS_CTK()
     {
       return true; // cannot be verified
     }
@@ -178,11 +179,11 @@ public:
   _LIBCUDACXX_HIDE_FROM_ABI constexpr reference access(data_handle_type __p, size_t __i) const
     noexcept(__is_access_noexcept)
   {
-#if _CCCL_COMPILER(NVHPC)
+#if _CCCL_HOST_COMPILATION()
     __check_host_pointer(__p);
-#elif defined(__CUDA_ARCH__)
+#else // ^^^ _CCCL_HOST_COMPILATION() ^^^ // vvv !_CCCL_HOST_COMPILATION() vvv
     static_assert(false, "cuda::__host_accessor cannot be used in DEVICE code");
-#endif
+#endif // !_CCCL_HOST_COMPILATION()
     return _Accessor::access(__p, __i);
   }
 
@@ -218,8 +219,9 @@ class __device_accessor : public _Accessor
     noexcept(_CUDA_VSTD::declval<_Accessor>().offset(_CUDA_VSTD::declval<__data_handle_type>(), 0));
 
   [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI static constexpr bool
-  __is_device_accessible_pointer([[maybe_unused]] __data_handle_type __p) noexcept
+  __is_device_accessible_pointer_from_host([[maybe_unused]] __data_handle_type __p) noexcept
   {
+#if _CCCL_HAS_CTK()
     if constexpr (_CUDA_VSTD::contiguous_iterator<__data_handle_type>)
     {
       ::cudaPointerAttributes __ptr_attrib{};
@@ -228,21 +230,32 @@ class __device_accessor : public _Accessor
       return __ptr_attrib.devicePointer != nullptr || __ptr_attrib.type == ::cudaMemoryTypeUnregistered;
     }
     else
+#endif // _CCCL_HAS_CTK()
     {
       return true; // cannot be verified
     }
   }
 
+#if _CCCL_DEVICE_COMPILATION()
+
+  [[nodiscard]] _CCCL_HIDE_FROM_ABI _CCCL_DEVICE static constexpr bool
+  __is_device_accessible_pointer_from_device(__data_handle_type __p) noexcept
+  {
+    return _CUDA_DEVICE::is_address_from(_CUDA_DEVICE::address_space::global, __p)
+        || _CUDA_DEVICE::is_address_from(_CUDA_DEVICE::address_space::shared, __p)
+        || _CUDA_DEVICE::is_address_from(_CUDA_DEVICE::address_space::constant, __p)
+        || _CUDA_DEVICE::is_address_from(_CUDA_DEVICE::address_space::local, __p)
+        || _CUDA_DEVICE::is_address_from(_CUDA_DEVICE::address_space::grid_constant, __p)
+        || _CUDA_DEVICE::is_address_from(_CUDA_DEVICE::address_space::cluster_shared, __p);
+  }
+
+#endif // _CCCL_DEVICE_COMPILATION()
+
   _LIBCUDACXX_HIDE_FROM_ABI static constexpr void
   __check_device_pointer([[maybe_unused]] __data_handle_type __p) noexcept
   {
-    _CCCL_ASSERT(__is_device_accessible_pointer(__p), "cuda::__host_accessor data handle is not a HOST pointer");
-  }
-
-  template <typename _Sp = bool> // lazy evaluation
-  _LIBCUDACXX_HIDE_FROM_ABI static constexpr void __prevent_host_instantiation() noexcept
-  {
-    static_assert(_CUDA_VSTD::__always_false_v<_Sp>, "cuda::__device_accessor cannot be used in HOST code");
+    NV_IF_TARGET(NV_IS_HOST,
+                 (_CCCL_ASSERT(__is_device_accessible_pointer_from_host(__p), "The pointer is not device accessible");))
   }
 
 public:
@@ -300,9 +313,10 @@ public:
   _LIBCUDACXX_HIDE_FROM_ABI constexpr reference access(data_handle_type __p, size_t __i) const
     noexcept(__is_access_noexcept)
   {
-#if !_CCCL_COMPILER(NVHPC) && !defined(__CUDA_ARCH__)
-    __prevent_host_instantiation();
-#endif
+    NV_IF_ELSE_TARGET(
+      NV_IS_DEVICE,
+      (_CCCL_ASSERT(__is_device_accessible_pointer_from_device(__p), "The pointer is not device accessible");),
+      (_CCCL_ASSERT(false, "cuda::device_accessor cannot be used in HOST code");))
     return _Accessor::access(__p, __i);
   }
 
@@ -315,7 +329,7 @@ public:
   [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr bool
   __detectably_invalid(data_handle_type __p, size_t) const noexcept
   {
-    NV_IF_ELSE_TARGET(NV_IS_HOST, (return __is_device_accessible_pointer(__p);), (return false;))
+    NV_IF_ELSE_TARGET(NV_IS_HOST, (return __is_device_accessible_pointer_from_host(__p);), (return false;))
   }
 };
 
@@ -340,6 +354,7 @@ class __managed_accessor : public _Accessor
   [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI static constexpr bool
   __is_managed_pointer([[maybe_unused]] __data_handle_type __p) noexcept
   {
+#if _CCCL_HAS_CTK()
     if constexpr (_CUDA_VSTD::contiguous_iterator<__data_handle_type>)
     {
       ::cudaPointerAttributes __ptr_attrib{};
@@ -348,6 +363,7 @@ class __managed_accessor : public _Accessor
       return __ptr_attrib.devicePointer != nullptr && __ptr_attrib.hostPointer == __ptr_attrib.devicePointer;
     }
     else
+#endif // _CCCL_HAS_CTK()
     {
       return true; // cannot be verified
     }
@@ -447,5 +463,7 @@ template <template <typename> class _TClass, typename _Accessor>
 inline constexpr bool is_device_accessible_v<_TClass<_Accessor>> = is_device_accessible_v<_Accessor>;
 
 _LIBCUDACXX_END_NAMESPACE_CUDA
+
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _CUDA___MDSPAN_HOST_DEVICE_ACCESSOR

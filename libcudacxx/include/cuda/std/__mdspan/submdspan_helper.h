@@ -34,6 +34,8 @@
 #include <cuda/std/array>
 #include <cuda/std/tuple>
 
+#include <cuda/std/__cccl/prologue.h>
+
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
 // [mdspan.sub.overview]-2.5
@@ -118,7 +120,7 @@ template <size_t _Index, class... _Slices>
 }
 
 template <size_t _Index, class... _Slices>
-using __get_slice_type = __tuple_element_t<_Index, __tuple_types<_Slices...>>;
+using __get_slice_type = tuple_element_t<_Index, __tuple_types<_Slices...>>;
 
 template <class _IndexType, size_t _Index, class... _Slices>
 [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr _IndexType __first_extent_from_slice(_Slices... __slices) noexcept
@@ -182,5 +184,7 @@ __last_extent_from_slice(const _Extents& __src, _Slices... __slices) noexcept
 }
 
 _LIBCUDACXX_END_NAMESPACE_STD
+
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX___MDSPAN_SUBMDSPAN_HELPER_H

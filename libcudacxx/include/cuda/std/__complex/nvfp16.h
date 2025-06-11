@@ -28,7 +28,6 @@
 #  include <cuda/std/__floating_point/nvfp_types.h>
 #  include <cuda/std/__fwd/get.h>
 #  include <cuda/std/__type_traits/enable_if.h>
-#  include <cuda/std/__type_traits/integral_constant.h>
 #  include <cuda/std/__type_traits/is_constructible.h>
 #  include <cuda/std/__type_traits/is_extended_floating_point.h>
 #  include <cuda/std/cmath>
@@ -37,6 +36,8 @@
 #  if !_CCCL_COMPILER(NVRTC)
 #    include <sstream> // for std::basic_ostringstream
 #  endif // !_CCCL_COMPILER(NVRTC)
+
+#  include <cuda/std/__cccl/prologue.h>
 
 // This is a workaround against the user defining macros __CUDA_NO_HALF_CONVERSIONS__ __CUDA_NO_HALF_OPERATORS__
 namespace __cccl_internal
@@ -69,8 +70,7 @@ struct __is_non_narrowing_convertible<double, __half>
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
 template <>
-struct __complex_alignment<__half> : integral_constant<size_t, alignof(__half2)>
-{};
+inline constexpr size_t __complex_alignment_v<__half> = alignof(__half2);
 
 template <>
 struct __type_to_vector<__half>
@@ -166,11 +166,11 @@ public:
   }
 #  endif // !_CCCL_COMPILER(NVRTC)
 
-  _LIBCUDACXX_HIDE_FROM_ABI value_type real() const
+  [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI value_type real() const
   {
     return __repr_.x;
   }
-  _LIBCUDACXX_HIDE_FROM_ABI value_type imag() const
+  [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI value_type imag() const
   {
     return __repr_.y;
   }
@@ -185,11 +185,11 @@ public:
   }
 
   // Those additional volatile overloads are meant to help with reductions in thrust
-  _LIBCUDACXX_HIDE_FROM_ABI value_type real() const volatile
+  [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI value_type real() const volatile
   {
     return __repr_.x;
   }
-  _LIBCUDACXX_HIDE_FROM_ABI value_type imag() const volatile
+  [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI value_type imag() const volatile
   {
     return __repr_.y;
   }
@@ -230,7 +230,7 @@ public:
     return __lhs;
   }
 
-  _LIBCUDACXX_HIDE_FROM_ABI friend bool operator==(const complex& __lhs, const complex& __rhs) noexcept
+  [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI friend bool operator==(const complex& __lhs, const complex& __rhs) noexcept
   {
     return __hbeq2(__lhs.__repr_, __rhs.__repr_);
   }
@@ -268,7 +268,7 @@ _LIBCUDACXX_HIDE_FROM_ABI complex<double>& complex<double>::operator=(const comp
   return *this;
 }
 
-_LIBCUDACXX_HIDE_FROM_ABI __half arg(__half __re)
+[[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI __half arg(__half __re)
 {
   return _CUDA_VSTD::atan2(__int2half_rn(0), __re);
 }
@@ -342,6 +342,8 @@ operator<<(::std::basic_ostream<_CharT, _Traits>& __os, const complex<__half>& _
 #  endif // !_LIBCUDACXX_HAS_NO_LOCALIZATION && !_CCCL_COMPILER(NVRTC)
 
 _LIBCUDACXX_END_NAMESPACE_STD
+
+#  include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX_HAS_NVFP16()
 

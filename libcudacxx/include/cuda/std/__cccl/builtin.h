@@ -12,6 +12,7 @@
 #define __CCCL_BUILTIN_H
 
 #include <cuda/std/__cccl/compiler.h>
+#include <cuda/std/__cccl/preprocessor.h>
 #include <cuda/std/__cccl/system_header.h>
 
 #if defined(_CCCL_IMPLICIT_SYSTEM_HEADER_GCC)
@@ -22,6 +23,7 @@
 #  pragma system_header
 #endif // no system header
 
+#include <cuda/std/__cccl/attributes.h>
 #include <cuda/std/__cccl/extended_data_types.h>
 
 //! This file consolidates all compiler builtin detection for CCCL.
@@ -145,11 +147,9 @@
 #if _CCCL_CHECK_BUILTIN(builtin_assume) || _CCCL_COMPILER(CLANG) || _CCCL_COMPILER(NVHPC)
 #  define _CCCL_BUILTIN_ASSUME(...) __builtin_assume(__VA_ARGS__)
 #elif _CCCL_COMPILER(GCC, >=, 13)
-#  define _CCCL_BUILTIN_ASSUME(...) \
-    NV_IF_ELSE_TARGET(NV_IS_DEVICE, (__builtin_assume(__VA_ARGS__);), (__attribute__((__assume__(__VA_ARGS__)));))
+#  define _CCCL_BUILTIN_ASSUME(...) __attribute__((__assume__(__VA_ARGS__)))
 #elif _CCCL_COMPILER(MSVC)
-#  define _CCCL_BUILTIN_ASSUME(...) \
-    NV_IF_ELSE_TARGET(NV_IS_DEVICE, (__builtin_assume(__VA_ARGS__);), (__assume(__VA_ARGS__);))
+#  define _CCCL_BUILTIN_ASSUME(...) __assume(__VA_ARGS__)
 #else
 #  define _CCCL_BUILTIN_ASSUME(...)
 #endif // _CCCL_CHECK_BUILTIN(builtin_assume)
@@ -205,15 +205,42 @@
 #  define _CCCL_BUILTIN_POPCOUNTLL(...) __builtin_popcountll(__VA_ARGS__)
 #endif // _CCCL_CHECK_BUILTIN(builtin_popcount)
 
+#if _CCCL_CHECK_BUILTIN(builtin_popcountg)
+#  define _CCCL_BUILTIN_POPCOUNTG(...) __builtin_popcountg(__VA_ARGS__)
+#endif // _CCCL_CHECK_BUILTIN(builtin_popcountg)
+
+// nvcc cannot handle __builtin_popcountg
+#if _CCCL_CUDA_COMPILER(NVCC)
+#  undef _CCCL_BUILTIN_POPCOUNTG
+#endif // _CCCL_CUDA_COMPILER(NVCC)
+
 #if _CCCL_CHECK_BUILTIN(builtin_clz) || _CCCL_COMPILER(GCC, <, 10) || _CCCL_COMPILER(CLANG) || _CCCL_COMPILER(NVHPC)
 #  define _CCCL_BUILTIN_CLZ(...)   __builtin_clz(__VA_ARGS__)
 #  define _CCCL_BUILTIN_CLZLL(...) __builtin_clzll(__VA_ARGS__)
 #endif // _CCCL_CHECK_BUILTIN(builtin_clz)
 
+#if _CCCL_CHECK_BUILTIN(builtin_clzg)
+#  define _CCCL_BUILTIN_CLZG(...) __builtin_clzg(__VA_ARGS__)
+#endif // _CCCL_CHECK_BUILTIN(builtin_clzg)
+
+// nvcc cannot handle __builtin_clzg
+#if _CCCL_CUDA_COMPILER(NVCC)
+#  undef _CCCL_BUILTIN_CLZG
+#endif // _CCCL_CUDA_COMPILER(NVCC)
+
 #if _CCCL_CHECK_BUILTIN(builtin_ctz) || _CCCL_COMPILER(GCC, <, 10) || _CCCL_COMPILER(CLANG) || _CCCL_COMPILER(NVHPC)
 #  define _CCCL_BUILTIN_CTZ(...)   __builtin_ctz(__VA_ARGS__)
 #  define _CCCL_BUILTIN_CTZLL(...) __builtin_ctzll(__VA_ARGS__)
 #endif // _CCCL_CHECK_BUILTIN(builtin_ctz)
+
+#if _CCCL_CHECK_BUILTIN(builtin_ctzg)
+#  define _CCCL_BUITLIN_CTZG(...) __builtin_ctzg(__VA_ARGS__)
+#endif // _CCCL_CHECK_BUILTIN(builtin_ctzg)
+
+// nvcc cannot handle __builtin_ctzg
+#if _CCCL_CUDA_COMPILER(NVCC)
+#  undef _CCCL_BUITLIN_CTZG
+#endif // _CCCL_CUDA_COMPILER(NVCC)
 
 #if _CCCL_CHECK_BUILTIN(builtin_bswap16) || _CCCL_COMPILER(GCC)
 #  define _CCCL_BUILTIN_BSWAP16(...) __builtin_bswap16(__VA_ARGS__)
@@ -923,7 +950,7 @@
 #  define _CCCL_BUILTIN_HAS_TRIVIAL_DESTRUCTOR(...) __has_trivial_destructor(__VA_ARGS__)
 #endif // _CCCL_CHECK_BUILTIN(has_trivial_destructor) && gcc >= 4.3
 
-#if _CCCL_CHECK_BUILTIN(has_unique_object_representations) || _CCCL_COMPILER(GCC, >=, 7)
+#if _CCCL_CHECK_BUILTIN(has_unique_object_representations) || _CCCL_COMPILER(GCC, >=, 7) || _CCCL_COMPILER(MSVC)
 #  define _CCCL_BUILTIN_HAS_UNIQUE_OBJECT_REPRESENTATIONS(...) __has_unique_object_representations(__VA_ARGS__)
 #endif // _CCCL_CHECK_BUILTIN(has_unique_object_representations) && gcc >= 7.0
 
@@ -935,6 +962,8 @@
 #if _CCCL_HAS_BUILTIN(__integer_pack)
 #  define _CCCL_BUILTIN_INTEGER_PACK(...) __integer_pack(__VA_ARGS__)
 #endif // _CCCL_HAS_BUILTIN(__integer_pack)
+
+#define _CCCL_BUILTIN_IS_ABSTRACT(...) __is_abstract(__VA_ARGS__)
 
 #if _CCCL_CHECK_BUILTIN(is_aggregate) || _CCCL_COMPILER(GCC, >=, 7) || _CCCL_COMPILER(MSVC, >, 19, 14) \
   || _CCCL_COMPILER(NVRTC)
@@ -1243,6 +1272,72 @@
 // NVRTC does not expose builtin_strlen
 #if !_CCCL_COMPILER(GCC) && !_CCCL_COMPILER(NVRTC)
 #  define _CCCL_BUILTIN_STRLEN(...) __builtin_strlen(__VA_ARGS__)
+#endif
+
+// Some compilers provide std::move/std::forward/etc as builtins
+#if defined(__cplusplus)
+// Bring in the feature test macros (needed for std::forward_like)
+#  if _CCCL_HAS_INCLUDE(<version>) // <version> should be the smallest include possible
+#    include <version>
+#  elif !_CCCL_COMPILER(NVRTC)
+#    include <ciso646> // otherwise go for the smallest possible header
+#  endif // !_CCCL_COMPILER(NVRTC)
+
+// Bring in the bits of the STL we need
+#  if defined(_GLIBCXX_VERSION)
+#    include <bits/move.h> // for move, forward, forward_like, and addressof
+#  elif defined(_LIBCXX_VERSION)
+#    include <__memory/addressof.h>
+#    include <__utility/as_const.h>
+#    include <__utility/forward.h>
+#    include <__utility/forward_like.h>
+#    include <__utility/move.h>
+#  endif
+
+#  if defined(_GLIBCXX_VERSION) || defined(_LIBCXX_VERSION)
+// std::move builtin
+#    if _CCCL_COMPILER(CLANG, >=, 15) || _CCCL_COMPILER(GCC, >=, 15)
+#      define _CCCL_HAS_BUILTIN_STD_MOVE() 1
+#    endif
+
+// std::forward builtin
+#    if _CCCL_COMPILER(CLANG, >=, 15) || _CCCL_COMPILER(GCC, >=, 15)
+#      define _CCCL_HAS_BUILTIN_STD_FORWARD() 1
+#    endif
+
+// std::addressof builtin
+#    if _CCCL_COMPILER(CLANG, >=, 15) || _CCCL_COMPILER(GCC, >=, 15)
+#      define _CCCL_HAS_BUILTIN_STD_ADDRESSOF() 1
+#    endif
+
+// std::as_const builtin
+#    if _CCCL_COMPILER(CLANG, >=, 15)
+#      define _CCCL_HAS_BUILTIN_STD_AS_CONST() 1
+#    endif
+
+// std::forward_like builtin
+// Leaving out MSVC for now because it is hard for forward-declare std::forward_like.
+#    if (_CCCL_COMPILER(CLANG, >=, 17) || _CCCL_COMPILER(GCC, >=, 15)) && defined(__cpp_lib_forward_like) \
+      && (__cpp_lib_forward_like >= 202217L)
+#      define _CCCL_HAS_BUILTIN_STD_FORWARD_LIKE() 1
+#    endif
+#  endif // defined(_GLIBCXX_VERSION) || defined(_LIBCXX_VERSION) || defined(_MSVC_STL_VERSION)
+#endif // defined(__cplusplus)
+
+#ifndef _CCCL_HAS_BUILTIN_STD_MOVE
+#  define _CCCL_HAS_BUILTIN_STD_MOVE() 0
+#endif
+#ifndef _CCCL_HAS_BUILTIN_STD_FORWARD
+#  define _CCCL_HAS_BUILTIN_STD_FORWARD() 0
+#endif
+#ifndef _CCCL_HAS_BUILTIN_STD_ADDRESSOF
+#  define _CCCL_HAS_BUILTIN_STD_ADDRESSOF() 0
+#endif
+#ifndef _CCCL_HAS_BUILTIN_STD_AS_CONST
+#  define _CCCL_HAS_BUILTIN_STD_AS_CONST() 0
+#endif
+#ifndef _CCCL_HAS_BUILTIN_STD_FORWARD_LIKE
+#  define _CCCL_HAS_BUILTIN_STD_FORWARD_LIKE() 0
 #endif
 
 #endif // __CCCL_BUILTIN_H

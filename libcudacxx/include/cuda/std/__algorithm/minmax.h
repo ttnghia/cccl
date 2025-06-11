@@ -27,8 +27,11 @@
 #include <cuda/std/__utility/pair.h>
 #include <cuda/std/initializer_list>
 
+#include <cuda/std/__cccl/prologue.h>
+
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _Tp, class _Compare>
 [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr pair<const _Tp&, const _Tp&>
 minmax(const _Tp& __a, const _Tp& __b, _Compare __comp)
@@ -48,7 +51,7 @@ template <class _Tp, class _Compare>
 [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr pair<_Tp, _Tp> minmax(initializer_list<_Tp> __t, _Compare __comp)
 {
   static_assert(__is_callable<_Compare, _Tp, _Tp>::value, "The comparator has to be callable");
-  __identity __proj{};
+  identity __proj{};
   auto __ret = _CUDA_VSTD::__minmax_element_impl(__t.begin(), __t.end(), __comp, __proj);
   return pair<_Tp, _Tp>(*__ret.first, *__ret.second);
 }
@@ -62,5 +65,7 @@ template <class _Tp>
 #endif // _LIBCUDACXX_CXX03_LANG
 
 _LIBCUDACXX_END_NAMESPACE_STD
+
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX___ALGORITHM_MINMAX_H

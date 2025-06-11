@@ -23,11 +23,7 @@
 #include <cuda/std/atomic>
 #include <cuda/std/limits>
 
-_CCCL_PUSH_MACROS
-
-#ifdef _LIBCUDACXX_HAS_NO_THREADS
-#  error <latch> is not supported on this single threaded system
-#endif
+#include <cuda/std/__cccl/prologue.h>
 
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
@@ -87,6 +83,6 @@ using latch = __latch_base<>;
 
 _LIBCUDACXX_END_NAMESPACE_STD
 
-_CCCL_POP_MACROS
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif //_LIBCUDACXX___LATCH_LATCH_H

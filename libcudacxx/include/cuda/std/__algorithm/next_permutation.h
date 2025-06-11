@@ -28,8 +28,11 @@
 #include <cuda/std/__utility/move.h>
 #include <cuda/std/__utility/pair.h>
 
+#include <cuda/std/__cccl/prologue.h>
+
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _AlgPolicy, class _Compare, class _BidirectionalIterator, class _Sentinel>
 _LIBCUDACXX_HIDE_FROM_ABI constexpr pair<_BidirectionalIterator, bool>
 __next_permutation(_BidirectionalIterator __first, _Sentinel __last, _Compare&& __comp)
@@ -63,6 +66,7 @@ __next_permutation(_BidirectionalIterator __first, _Sentinel __last, _Compare&& 
   }
 }
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _BidirectionalIterator, class _Compare>
 _LIBCUDACXX_HIDE_FROM_ABI constexpr bool
 next_permutation(_BidirectionalIterator __first, _BidirectionalIterator __last, _Compare __comp)
@@ -79,5 +83,7 @@ _LIBCUDACXX_HIDE_FROM_ABI constexpr bool next_permutation(_BidirectionalIterator
 }
 
 _LIBCUDACXX_END_NAMESPACE_STD
+
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX___ALGORITHM_NEXT_PERMUTATION_H

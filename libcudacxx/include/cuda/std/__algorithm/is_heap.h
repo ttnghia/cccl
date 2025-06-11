@@ -25,8 +25,11 @@
 #include <cuda/std/__algorithm/is_heap_until.h>
 #include <cuda/std/__iterator/iterator_traits.h>
 
+#include <cuda/std/__cccl/prologue.h>
+
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _RandomAccessIterator, class _Compare>
 [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr bool
 is_heap(_RandomAccessIterator __first, _RandomAccessIterator __last, _Compare __comp)
@@ -42,5 +45,7 @@ is_heap(_RandomAccessIterator __first, _RandomAccessIterator __last)
 }
 
 _LIBCUDACXX_END_NAMESPACE_STD
+
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX___ALGORITHM_IS_HEAP_H

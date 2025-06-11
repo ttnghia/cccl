@@ -25,8 +25,11 @@
 #include <cuda/std/__algorithm/copy.h>
 #include <cuda/std/__iterator/iterator_traits.h>
 
+#include <cuda/std/__cccl/prologue.h>
+
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _Compare, class _InputIterator1, class _InputIterator2, class _OutputIterator>
 _LIBCUDACXX_HIDE_FROM_ABI constexpr _OutputIterator __merge(
   _InputIterator1 __first1,
@@ -80,5 +83,7 @@ merge(_InputIterator1 __first1,
 }
 
 _LIBCUDACXX_END_NAMESPACE_STD
+
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX___ALGORITHM_MERGE_H

@@ -25,10 +25,13 @@
 #  include <cuda/std/__type_traits/predicate_traits.h>
 #endif // _LIBCUDACXX_HAS_STRING
 
+#include <cuda/std/__cccl/prologue.h>
+
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
 struct __equal_to
 {
+  _CCCL_EXEC_CHECK_DISABLE
   template <class _T1, class _T2>
   [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr bool operator()(const _T1& __lhs, const _T2& __rhs) const
     noexcept(noexcept(__lhs == __rhs))
@@ -45,6 +48,7 @@ struct __is_trivial_equality_predicate<__equal_to, _Lhs, _Rhs> : true_type
 
 struct __less
 {
+  _CCCL_EXEC_CHECK_DISABLE
   template <class _Tp, class _Up>
   [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr bool operator()(const _Tp& __lhs, const _Up& __rhs) const
     noexcept(noexcept(__lhs < __rhs))
@@ -54,5 +58,7 @@ struct __less
 };
 
 _LIBCUDACXX_END_NAMESPACE_STD
+
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX___ALGORITHM_COMP_H

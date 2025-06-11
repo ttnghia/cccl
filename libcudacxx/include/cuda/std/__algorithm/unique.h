@@ -27,8 +27,11 @@
 #include <cuda/std/__utility/move.h>
 #include <cuda/std/__utility/pair.h>
 
+#include <cuda/std/__cccl/prologue.h>
+
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _AlgPolicy, class _Iter, class _Sent, class _BinaryPredicate>
 [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr _CUDA_VSTD::pair<_Iter, _Iter>
 __unique(_Iter __first, _Sent __last, _BinaryPredicate&& __pred)
@@ -52,6 +55,7 @@ __unique(_Iter __first, _Sent __last, _BinaryPredicate&& __pred)
   return _CUDA_VSTD::pair<_Iter, _Iter>(__first, __first);
 }
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _ForwardIterator, class _BinaryPredicate>
 [[nodiscard]] _LIBCUDACXX_HIDE_FROM_ABI constexpr _ForwardIterator
 unique(_ForwardIterator __first, _ForwardIterator __last, _BinaryPredicate __pred)
@@ -67,5 +71,7 @@ unique(_ForwardIterator __first, _ForwardIterator __last)
 }
 
 _LIBCUDACXX_END_NAMESPACE_STD
+
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX___ALGORITHM_UNIQUE_H

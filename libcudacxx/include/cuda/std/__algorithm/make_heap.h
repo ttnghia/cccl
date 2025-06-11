@@ -27,8 +27,11 @@
 #include <cuda/std/__iterator/iterator_traits.h>
 #include <cuda/std/__utility/move.h>
 
+#include <cuda/std/__cccl/prologue.h>
+
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _AlgPolicy, class _Compare, class _RandomAccessIterator>
 _LIBCUDACXX_HIDE_FROM_ABI constexpr void
 __make_heap(_RandomAccessIterator __first, _RandomAccessIterator __last, _Compare&& __comp)
@@ -47,6 +50,7 @@ __make_heap(_RandomAccessIterator __first, _RandomAccessIterator __last, _Compar
   }
 }
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _RandomAccessIterator, class _Compare>
 _LIBCUDACXX_HIDE_FROM_ABI constexpr void
 make_heap(_RandomAccessIterator __first, _RandomAccessIterator __last, _Compare __comp)
@@ -54,6 +58,7 @@ make_heap(_RandomAccessIterator __first, _RandomAccessIterator __last, _Compare 
   _CUDA_VSTD::__make_heap<_ClassicAlgPolicy>(_CUDA_VSTD::move(__first), _CUDA_VSTD::move(__last), __comp);
 }
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _RandomAccessIterator>
 _LIBCUDACXX_HIDE_FROM_ABI constexpr void make_heap(_RandomAccessIterator __first, _RandomAccessIterator __last)
 {
@@ -61,5 +66,7 @@ _LIBCUDACXX_HIDE_FROM_ABI constexpr void make_heap(_RandomAccessIterator __first
 }
 
 _LIBCUDACXX_END_NAMESPACE_STD
+
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX___ALGORITHM_MAKE_HEAP_H

@@ -31,8 +31,11 @@
 #include <cuda/std/__type_traits/is_copy_constructible.h>
 #include <cuda/std/__utility/move.h>
 
+#include <cuda/std/__cccl/prologue.h>
+
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _AlgPolicy, class _Compare, class _RandomAccessIterator, class _Sentinel>
 _LIBCUDACXX_HIDE_FROM_ABI constexpr _RandomAccessIterator
 __partial_sort_impl(_RandomAccessIterator __first, _RandomAccessIterator __middle, _Sentinel __last, _Compare&& __comp)
@@ -59,6 +62,7 @@ __partial_sort_impl(_RandomAccessIterator __first, _RandomAccessIterator __middl
   return __i;
 }
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _AlgPolicy, class _Compare, class _RandomAccessIterator, class _Sentinel>
 _LIBCUDACXX_HIDE_FROM_ABI constexpr _RandomAccessIterator
 __partial_sort(_RandomAccessIterator __first, _RandomAccessIterator __middle, _Sentinel __last, _Compare& __comp)
@@ -72,6 +76,7 @@ __partial_sort(_RandomAccessIterator __first, _RandomAccessIterator __middle, _S
     __first, __middle, __last, static_cast<__comp_ref_type<_Compare>>(__comp));
 }
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _RandomAccessIterator, class _Compare>
 _LIBCUDACXX_HIDE_FROM_ABI constexpr void partial_sort(
   _RandomAccessIterator __first, _RandomAccessIterator __middle, _RandomAccessIterator __last, _Compare __comp)
@@ -91,5 +96,7 @@ partial_sort(_RandomAccessIterator __first, _RandomAccessIterator __middle, _Ran
 }
 
 _LIBCUDACXX_END_NAMESPACE_STD
+
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX___ALGORITHM_PARTIAL_SORT_H

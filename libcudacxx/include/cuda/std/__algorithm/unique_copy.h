@@ -29,6 +29,8 @@
 #include <cuda/std/__utility/move.h>
 #include <cuda/std/__utility/pair.h>
 
+#include <cuda/std/__cccl/prologue.h>
+
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
 namespace __unique_copy_tags
@@ -43,6 +45,7 @@ struct __read_from_tmp_value_tag
 
 } // namespace __unique_copy_tags
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _AlgPolicy, class _BinaryPredicate, class _InputIterator, class _Sent, class _OutputIterator>
 constexpr _LIBCUDACXX_HIDE_FROM_ABI pair<_InputIterator, _OutputIterator> __unique_copy(
   _InputIterator __first,
@@ -69,6 +72,7 @@ constexpr _LIBCUDACXX_HIDE_FROM_ABI pair<_InputIterator, _OutputIterator> __uniq
   return pair<_InputIterator, _OutputIterator>(_CUDA_VSTD::move(__first), _CUDA_VSTD::move(__result));
 }
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _AlgPolicy, class _BinaryPredicate, class _ForwardIterator, class _Sent, class _OutputIterator>
 constexpr _LIBCUDACXX_HIDE_FROM_ABI pair<_ForwardIterator, _OutputIterator> __unique_copy(
   _ForwardIterator __first,
@@ -95,6 +99,7 @@ constexpr _LIBCUDACXX_HIDE_FROM_ABI pair<_ForwardIterator, _OutputIterator> __un
   return pair<_ForwardIterator, _OutputIterator>(_CUDA_VSTD::move(__first), _CUDA_VSTD::move(__result));
 }
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _AlgPolicy, class _BinaryPredicate, class _InputIterator, class _Sent, class _InputAndOutputIterator>
 constexpr _LIBCUDACXX_HIDE_FROM_ABI pair<_InputIterator, _InputAndOutputIterator> __unique_copy(
   _InputIterator __first,
@@ -118,6 +123,7 @@ constexpr _LIBCUDACXX_HIDE_FROM_ABI pair<_InputIterator, _InputAndOutputIterator
   return pair<_InputIterator, _InputAndOutputIterator>(_CUDA_VSTD::move(__first), _CUDA_VSTD::move(__result));
 }
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _InputIterator, class _OutputIterator, class _BinaryPredicate>
 _LIBCUDACXX_HIDE_FROM_ABI constexpr _OutputIterator
 unique_copy(_InputIterator __first, _InputIterator __last, _OutputIterator __result, _BinaryPredicate __pred)
@@ -134,6 +140,7 @@ unique_copy(_InputIterator __first, _InputIterator __last, _OutputIterator __res
     .second;
 }
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _InputIterator, class _OutputIterator>
 _LIBCUDACXX_HIDE_FROM_ABI constexpr _OutputIterator
 unique_copy(_InputIterator __first, _InputIterator __last, _OutputIterator __result)
@@ -143,5 +150,7 @@ unique_copy(_InputIterator __first, _InputIterator __last, _OutputIterator __res
 }
 
 _LIBCUDACXX_END_NAMESPACE_STD
+
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX___ALGORITHM_UNIQUE_COPY_H

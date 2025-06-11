@@ -20,14 +20,14 @@
 #  pragma system_header
 #endif // no system header
 
-#if !defined(_LIBCUDACXX_HAS_NO_THREADS) && defined(_LIBCUDACXX_HAS_THREAD_API_WIN32)
+#if defined(_LIBCUDACXX_HAS_THREAD_API_WIN32)
 
 #  include <cuda/std/chrono>
 
 #  include <process.h>
 #  include <windows.h>
 
-_CCCL_PUSH_MACROS
+#  include <cuda/std/__cccl/prologue.h>
 
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
@@ -80,8 +80,8 @@ _LIBCUDACXX_HIDE_FROM_ABI void __cccl_thread_sleep_for(chrono::nanoseconds __ns)
 
 _LIBCUDACXX_END_NAMESPACE_STD
 
-_CCCL_POP_MACROS
+#  include <cuda/std/__cccl/epilogue.h>
 
-#endif // !_LIBCUDACXX_HAS_NO_THREADS && _LIBCUDACXX_HAS_THREAD_API_WIN32
+#endif // _LIBCUDACXX_HAS_THREAD_API_WIN32
 
 #endif // _LIBCUDACXX___THREAD_THREADING_SUPPORT_H

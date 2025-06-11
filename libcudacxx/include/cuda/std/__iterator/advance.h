@@ -29,6 +29,8 @@
 #include <cuda/std/__utility/convert_to_integral.h>
 #include <cuda/std/__utility/move.h>
 
+#include <cuda/std/__cccl/prologue.h>
+
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
 _CCCL_EXEC_CHECK_DISABLE
@@ -88,7 +90,7 @@ private:
     return __a == 0 ? __b == 0 : //
              __a > 0 ? __a >= __b
                      : __a <= __b;
-  };
+  }
 
 public:
   // Preconditions: If `I` does not model `bidirectional_iterator`, `n` is not negative.
@@ -222,5 +224,7 @@ _CCCL_GLOBAL_CONSTANT auto advance = __advance::__fn{};
 } // namespace __cpo
 
 _LIBCUDACXX_END_NAMESPACE_RANGES
+
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX___ITERATOR_ADVANCE_H

@@ -399,7 +399,7 @@ public:
     virtual void set_affine_data_place(data_place place)
     {
       affine = mv(place);
-    };
+    }
 
     virtual bool operator==(const impl& rhs) const
     {
@@ -452,6 +452,12 @@ public:
   bool operator!=(const exec_place& rhs) const
   {
     return !(*this == rhs);
+  }
+
+  // To use in a ::std::map indexed by exec_place
+  bool operator<(const exec_place& rhs) const
+  {
+    return pimpl < rhs.pimpl;
   }
 
   /**
@@ -520,7 +526,7 @@ public:
   void set_affine_data_place(data_place place)
   {
     pimpl->set_affine_data_place(mv(place));
-  };
+  }
 
   stream_pool& get_stream_pool(async_resources_handle& async_resources, bool for_computation) const
   {

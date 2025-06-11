@@ -24,8 +24,11 @@
 #include <cuda/std/__algorithm/comp_ref_type.h>
 #include <cuda/std/__iterator/iterator_traits.h>
 
+#include <cuda/std/__cccl/prologue.h>
+
 _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
+_CCCL_EXEC_CHECK_DISABLE
 template <class _Compare, class _ForwardIterator>
 _LIBCUDACXX_HIDE_FROM_ABI constexpr _ForwardIterator
 __max_element(_ForwardIterator __first, _ForwardIterator __last, _Compare __comp)
@@ -61,5 +64,7 @@ max_element(_ForwardIterator __first, _ForwardIterator __last)
 }
 
 _LIBCUDACXX_END_NAMESPACE_STD
+
+#include <cuda/std/__cccl/epilogue.h>
 
 #endif // _LIBCUDACXX___ALGORITHM_MAX_ELEMENT_H
