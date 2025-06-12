@@ -70,6 +70,8 @@ runs:
         cat <<"EOF" > ci.sh
         #! /usr/bin/env bash
         set -euo pipefail
+        ulimit -n $(ulimit -Hn)
+        sccache --stop-server 2>/dev/null
         echo -e "\e[1;34mRunning as '$(whoami)' user in $(pwd):\e[0m"
         # Print current dist status to verify we're connected
         echo -e "\e[1;34mBuild cluster:\n$(./ci/sccache_dist_status.sh | sed 's/\"//g' | column -t -s,)\e[0m"
@@ -189,7 +191,7 @@ runs:
           if ! grep -q '\-cuda "clang' <<< "$COMMAND"; then
             if ! grep -q '_libcudacxx.sh' <<< "$COMMAND"; then
               extra_launch_args+=(
-                --env "PARALLEL_LEVEL=100000"
+                --env "PARALLEL_LEVEL=$(ulimit -Hn)"
               )
             elif ! grep -q '_python.sh' <<< "$COMMAND"; then
               extra_launch_args+=(
@@ -201,7 +203,7 @@ runs:
               )
             fi
             extra_launch_args+=(
-              --ulimit nofile=100000:100000
+              --ulimit nofile=$(ulimit -Hn):$(ulimit -Hn)
             )
           fi
 
