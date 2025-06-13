@@ -39,7 +39,7 @@ runs:
         alias retry="${{github.workspace}}/ci/util/retry.sh 5 30"
         retry sudo apt update
         retry sudo apt install -y --no-install-recommends tree git
-        if grep -Eq '"./ci/.*_python.sh"' <<< "$COMMAND"; then
+        if echo "$COMMAND" | grep -Eq '"./ci/.*_python.sh"'; then
           echo "is_python=true" >> "$GITHUB_ENV"
         fi
     - name: Add NVCC problem matcher
