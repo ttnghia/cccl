@@ -198,22 +198,16 @@ runs:
           # ClangCUDA can use the build cluster for C++ files, but _not_ CUDA,
           # and we'll OOM if we try to compile too many at once.
           if ! grep -q '\-cuda "clang' <<< "$COMMAND"; then
-            if ! grep -q '_libcudacxx.sh' <<< "$COMMAND"; then
+            if ! grep -q '_python.sh' <<< "$COMMAND"; then
               extra_launch_args+=(
                 --env "PARALLEL_LEVEL=$(ulimit -Hn)"
-              )
-            elif ! grep -q '_python.sh' <<< "$COMMAND"; then
-              extra_launch_args+=(
-                --env "PARALLEL_LEVEL=$((CPUS * 64))"
+                --ulimit "nofile=$(ulimit -Hn):$(ulimit -Hn)"
               )
             else
               extra_launch_args+=(
                 --env "PARALLEL_LEVEL=${CPUS}"
               )
             fi
-            extra_launch_args+=(
-              --ulimit nofile=$(ulimit -Hn):$(ulimit -Hn)
-            )
           fi
 
           if ! grep -q '11.1' <<< "${{inputs.cuda}}"; then
