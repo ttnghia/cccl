@@ -29,14 +29,14 @@ __host__ __device__ void test()
   {
     assert(true);
   }
-  _CCCL_CATCH (const Exception & e1)
+  _CCCL_CATCH (const Exception & e)
   {
-    assert(e1.value == 0);
+    assert(e.value == 0);
     assert(false);
   }
-  _CCCL_CATCH (const ExceptionBase & e2)
+  _CCCL_CATCH (const ExceptionBase & e)
   {
-    assert(e2.value == 0);
+    assert(e.value == 0);
     assert(false);
   }
   _CCCL_CATCH_ALL

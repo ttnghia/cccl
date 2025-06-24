@@ -52,9 +52,11 @@
 //     printf("unknown error\n");
 //   }
 #if !_CCCL_HAS_EXCEPTIONS() || (_CCCL_DEVICE_COMPILATION() && !_CCCL_CUDA_COMPILER(NVHPC))
-#  define _CCCL_TRY        if constexpr (true)
-#  define _CCCL_CATCH(...) else if constexpr (__VA_ARGS__ = ::__cccl_catch_any_lvalue{}; false)
-#  define _CCCL_CATCH_ALL  else if constexpr (false)
+#  define _CCCL_TRY if constexpr (true)
+#  define _CCCL_CATCH(...) \
+    if constexpr (false)   \
+      if constexpr (__VA_ARGS__ = ::__cccl_catch_any_lvalue{}; false)
+#  define _CCCL_CATCH_ALL if constexpr (false)
 #else // ^^^ !_CCCL_HAS_EXCEPTIONS() || (_CCCL_DEVICE_COMPILATION() && !_CCCL_CUDA_COMPILER(NVHPC)) ^^^
       // vvv _CCCL_HAS_EXCEPTIONS() && (!_CCCL_DEVICE_COMPILATION() || _CCCL_CUDA_COMPILER(NVHPC)) vvv
 #  define _CCCL_TRY       try
