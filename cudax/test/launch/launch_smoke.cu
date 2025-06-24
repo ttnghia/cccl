@@ -304,7 +304,12 @@ C2H_TEST("Launch smoke path builder", "[launch]")
 
   launch_smoke_test(pb);
 
+  // In CUDA 12.0 we don't test kernel_ref launches, so the node count is lower
+#if _CCCL_CTK_BELOW(12, 1)
   CUDAX_REQUIRE(g.node_count() == 46);
+#else // ^^^ _CCCL_CTK_BELOW(12, 1) ^^^ / vvv _CCCL_CTK_AT_LEAST(12, 1) vvv
+  CUDAX_REQUIRE(g.node_count() == 62);
+#endif // _CCCL_CTK_BELOW(12, 1)
 
   auto exec = g.instantiate();
   cudax::stream s{cudax::device_ref{0}};

@@ -132,20 +132,20 @@ _CCCL_HOST_API auto __launch_impl(_Dst&& __dst, _Config __conf, CUfunction __ker
     __throw_cuda_error(__status, "Failed to prepare a launch configuration");
   }
 
-  __config.gridDimX  = __conf.dims.extents(block, grid).x;
-  __config.gridDimY  = __conf.dims.extents(block, grid).y;
-  __config.gridDimZ  = __conf.dims.extents(block, grid).z;
-  __config.blockDimX = __conf.dims.extents(thread, block).x;
-  __config.blockDimY = __conf.dims.extents(thread, block).y;
-  __config.blockDimZ = __conf.dims.extents(thread, block).z;
+  __config.gridDimX  = static_cast<unsigned>(__conf.dims.extents(block, grid).x);
+  __config.gridDimY  = static_cast<unsigned>(__conf.dims.extents(block, grid).y);
+  __config.gridDimZ  = static_cast<unsigned>(__conf.dims.extents(block, grid).z);
+  __config.blockDimX = static_cast<unsigned>(__conf.dims.extents(thread, block).x);
+  __config.blockDimY = static_cast<unsigned>(__conf.dims.extents(thread, block).y);
+  __config.blockDimZ = static_cast<unsigned>(__conf.dims.extents(thread, block).z);
 
   if constexpr (__has_cluster_level)
   {
     CUlaunchAttribute __cluster_dims_attr{};
     __cluster_dims_attr.id                 = CU_LAUNCH_ATTRIBUTE_CLUSTER_DIMENSION;
-    __cluster_dims_attr.value.clusterDim.x = static_cast<unsigned int>(__conf.dims.extents(block, cluster).x);
-    __cluster_dims_attr.value.clusterDim.y = static_cast<unsigned int>(__conf.dims.extents(block, cluster).y);
-    __cluster_dims_attr.value.clusterDim.z = static_cast<unsigned int>(__conf.dims.extents(block, cluster).z);
+    __cluster_dims_attr.value.clusterDim.x = static_cast<unsigned>(__conf.dims.extents(block, cluster).x);
+    __cluster_dims_attr.value.clusterDim.y = static_cast<unsigned>(__conf.dims.extents(block, cluster).y);
+    __cluster_dims_attr.value.clusterDim.z = static_cast<unsigned>(__conf.dims.extents(block, cluster).z);
     __config.attrs[__config.numAttrs++]    = __cluster_dims_attr;
   }
 
