@@ -28,14 +28,14 @@ void test_host()
     throw Exception{};
     assert(false);
   }
-  _CCCL_CATCH (const Exception & e)
+  _CCCL_CATCH (const Exception & e1)
   {
-    assert(e.value == 0);
+    assert(e1.value == 0);
     assert(true);
   }
-  _CCCL_CATCH (const ExceptionBase & e)
+  _CCCL_CATCH (const ExceptionBase & e2)
   {
-    assert(e.value == 0);
+    assert(e2.value == 0);
     assert(false);
   }
   _CCCL_CATCH_ALL
@@ -50,14 +50,14 @@ __device__ void test_device()
   {
     assert(true);
   }
-  _CCCL_CATCH (const Exception & e)
+  _CCCL_CATCH (const Exception & e1)
   {
-    assert(e.value == 0);
+    assert(e1.value == 0);
     assert(false);
   }
-  _CCCL_CATCH (const ExceptionBase & e)
+  _CCCL_CATCH (const ExceptionBase & e2)
   {
-    assert(e.value == 0);
+    assert(e2.value == 0);
     assert(false);
   }
   _CCCL_CATCH_ALL
