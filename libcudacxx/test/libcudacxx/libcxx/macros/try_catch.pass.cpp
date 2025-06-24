@@ -21,6 +21,7 @@ struct ExceptionBase
 struct Exception : ExceptionBase
 {};
 
+#if !_CCCL_COMPILER(NVRTC)
 void test_host()
 {
   _CCCL_TRY
@@ -42,6 +43,7 @@ void test_host()
     assert(false);
   }
 }
+#endif // !_CCCL_COMPILER(NVRTC)
 
 __device__ void test_device()
 {
