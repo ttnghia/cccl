@@ -26,7 +26,6 @@ void test_host()
   _CCCL_TRY
   {
     throw Exception{};
-    assert(false);
   }
   _CCCL_CATCH (const Exception & e1)
   {
