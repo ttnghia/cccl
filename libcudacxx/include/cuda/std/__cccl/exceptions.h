@@ -25,7 +25,7 @@
 
 #if defined(CCCL_DISABLE_EXCEPTIONS) // Escape hatch for users to manually disable exceptions
 #  define _CCCL_HAS_EXCEPTIONS() 0
-#elif _CCCL_COMPILER(NVRTC) // NVRTC has no exceptions
+#elif _CCCL_DEVICE_COMPILATION() && !_CCCL_CUDA_COMPILER(NVHPC) // nvc++ traps if an exception is thrown in device code
 #  define _CCCL_HAS_EXCEPTIONS() 0
 #elif _CCCL_COMPILER(MSVC) // MSVC needs special checks for `_HAS_EXCEPTIONS` and `_CPPUNWIND`
 #  define _CCCL_HAS_EXCEPTIONS() ((_HAS_EXCEPTIONS != 0) && (_CPPUNWIND != 0))
@@ -51,23 +51,25 @@
 //   {
 //     printf("unknown error\n");
 //   }
-#if !_CCCL_HAS_EXCEPTIONS() || (_CCCL_DEVICE_COMPILATION() && !_CCCL_CUDA_COMPILER(NVHPC))
+#if _CCCL_HAS_EXCEPTIONS()
+#  define _CCCL_TRY       try
+#  define _CCCL_CATCH     catch
+#  define _CCCL_CATCH_ALL catch (...)
+#else // ^^^ _CCCL_HAS_EXCEPTIONS() ^^^ / vvv !_CCCL_HAS_EXCEPTIONS() vvv
 #  define _CCCL_TRY if constexpr (true)
 #  define _CCCL_CATCH(...)                                                   \
     if constexpr (::__cccl_catch_any_lvalue __catch_any_lvalue_obj{}; false) \
       if constexpr (__VA_ARGS__ = __catch_any_lvalue_obj; false)
 #  define _CCCL_CATCH_ALL if constexpr (false)
-#else // ^^^ !_CCCL_HAS_EXCEPTIONS() || (_CCCL_DEVICE_COMPILATION() && !_CCCL_CUDA_COMPILER(NVHPC)) ^^^
-      // vvv _CCCL_HAS_EXCEPTIONS() && (!_CCCL_DEVICE_COMPILATION() || _CCCL_CUDA_COMPILER(NVHPC)) vvv
-#  define _CCCL_TRY       try
-#  define _CCCL_CATCH     catch
-#  define _CCCL_CATCH_ALL catch (...)
-#endif // ^^^ _CCCL_HAS_EXCEPTIONS() && (!_CCCL_DEVICE_COMPILATION() || _CCCL_CUDA_COMPILER(NVHPC)) ^^^
+#endif // ^^^ !_CCCL_HAS_EXCEPTIONS() ^^^
 
 struct __cccl_catch_any_lvalue
 {
   template <class _Tp>
   _CCCL_HOST_DEVICE operator _Tp&() const noexcept;
+
+  template <class _Tp>
+  _CCCL_HOST_DEVICE operator _Tp&&() const noexcept = delete;
 };
 
 #endif // __CCCL_EXCEPTIONS_H
