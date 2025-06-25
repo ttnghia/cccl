@@ -25,6 +25,47 @@ struct Exception : ExceptionBase
 
 __host__ __device__ void test()
 {
+  // 1. test catch by value
+  _CCCL_TRY
+  {
+    assert(true);
+  }
+  _CCCL_CATCH (Exception e)
+  {
+    assert(e.value == 0);
+    assert(false);
+  }
+  _CCCL_CATCH (ExceptionBase e)
+  {
+    assert(e.value == 0);
+    assert(false);
+  }
+  _CCCL_CATCH_ALL
+  {
+    assert(false);
+  }
+
+  // 2. test catch by lvalue reference
+  _CCCL_TRY
+  {
+    assert(true);
+  }
+  _CCCL_CATCH (Exception & e)
+  {
+    assert(e.value == 0);
+    assert(false);
+  }
+  _CCCL_CATCH (ExceptionBase & e)
+  {
+    assert(e.value == 0);
+    assert(false);
+  }
+  _CCCL_CATCH_ALL
+  {
+    assert(false);
+  }
+
+  // 3. test catch by const lvalue reference
   _CCCL_TRY
   {
     assert(true);

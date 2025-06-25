@@ -23,6 +23,8 @@
 #  pragma system_header
 #endif // no system header
 
+#include <cuda/std/__cccl/dialect.h>
+
 #if defined(CCCL_DISABLE_EXCEPTIONS) // Escape hatch for users to manually disable exceptions
 #  define _CCCL_HAS_EXCEPTIONS() 0
 #elif _CCCL_COMPILER(NVRTC) // NVRTC has no exceptions
@@ -53,9 +55,9 @@
 //   }
 #if !_CCCL_HAS_EXCEPTIONS() || (_CCCL_DEVICE_COMPILATION() && !_CCCL_CUDA_COMPILER(NVHPC))
 #  define _CCCL_TRY if constexpr (true)
-#  define _CCCL_CATCH(...) \
-    if constexpr (false)   \
-      if constexpr (__VA_ARGS__ = ::__cccl_catch_any_lvalue{}; false)
+#  define _CCCL_CATCH(...)                                          \
+    if constexpr (__cccl_catch_any_lvalue __catch_any_obj{}; false) \
+      if constexpr (__VA_ARGS__ = __catch_any_obj; false)
 #  define _CCCL_CATCH_ALL if constexpr (false)
 #else // ^^^ !_CCCL_HAS_EXCEPTIONS() || (_CCCL_DEVICE_COMPILATION() && !_CCCL_CUDA_COMPILER(NVHPC)) ^^^
       // vvv _CCCL_HAS_EXCEPTIONS() && (!_CCCL_DEVICE_COMPILATION() || _CCCL_CUDA_COMPILER(NVHPC)) vvv
@@ -67,7 +69,7 @@
 struct __cccl_catch_any_lvalue
 {
   template <class _Tp>
-  _CCCL_HOST_DEVICE operator _Tp() const noexcept;
+  _CCCL_HOST_DEVICE operator _Tp&() const noexcept;
 };
 
 #endif // __CCCL_EXCEPTIONS_H
