@@ -281,7 +281,7 @@ template <class _Sndr>
     (void) get_completion_signatures<_Sndr>();
     return false; // didn't throw, not a dependent sender
   }
-  _CCCL_CATCH (dependent_sender_error&)
+  _CCCL_CATCH ([[maybe_unused]] dependent_sender_error & __e)
   {
     return true;
   }
