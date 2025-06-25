@@ -111,11 +111,6 @@ private:
   NV_IF_TARGET(NV_IS_HOST, (::cudaGetLastError();)) // clear CUDA error state
 #endif // _CCCL_HAS_CTK()
   _CCCL_THROW(::cuda::cuda_error(__status, __msg, __api, __loc));
-
-  NV_IF_ELSE_TARGET(NV_IS_HOST,
-                    (::cudaGetLastError(); // clear CUDA error state
-                     ), //
-                    (_CUDA_VSTD_NOVERSION::terminate();))
 }
 
 _LIBCUDACXX_END_NAMESPACE_CUDA
