@@ -251,7 +251,7 @@ _LIBCUDACXX_BEGIN_NAMESPACE_STD
 
 [[noreturn]] _CCCL_API inline void __throw_bad_optional_access()
 {
-  _CCCL_THROW(::std::bad_optional_access());
+  _CCCL_THROW(_CUDA_VSTD_NOVERSION::bad_optional_access());
 }
 
 struct nullopt_t
