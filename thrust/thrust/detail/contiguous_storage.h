@@ -131,9 +131,10 @@ public:
     }
     else if constexpr (!allocator_traits<Alloc>::is_always_equal::value)
     {
-      NV_IF_TARGET(NV_IS_DEVICE, (assert(m_allocator == other.m_allocator);), (if (m_allocator != other.m_allocator) {
-                     throw allocator_mismatch_on_swap();
-                   }));
+      if (m_allocator != other.m_allocator)
+      {
+        _CCCL_THROW(allocator_mismatch_on_swap());
+      }
     }
   }
 

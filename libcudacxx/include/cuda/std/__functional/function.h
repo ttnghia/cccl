@@ -59,11 +59,7 @@
 
 [[noreturn]] _CCCL_API inline void __throw_bad_function_call()
 {
-#  if _CCCL_HAS_EXCEPTIONS()
-  NV_IF_ELSE_TARGET(NV_IS_HOST, (throw ::std::bad_function_call();), (_CUDA_VSTD_NOVERSION::terminate();))
-#  else // ^^^ _CCCL_HAS_EXCEPTIONS() ^^^ / vvv !_CCCL_HAS_EXCEPTIONS() vvv
-  _CUDA_VSTD_NOVERSION::terminate();
-#  endif // !_CCCL_HAS_EXCEPTIONS()
+  _CCCL_THROW(throw ::std::bad_function_call());
 }
 
 template <class _Fp>

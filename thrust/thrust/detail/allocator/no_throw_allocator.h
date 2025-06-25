@@ -51,14 +51,14 @@ public:
 
   _CCCL_HOST_DEVICE void deallocate(typename super_t::pointer p, typename super_t::size_type n) noexcept
   {
-    NV_IF_TARGET(
-      NV_IS_HOST,
-      (try { super_t::deallocate(p, n); } // end try
-       catch (...){
-         // catch anything
-       } // end catch
-       ),
-      (super_t::deallocate(p, n);));
+    _CCCL_TRY
+    {
+      super_t::deallocate(p, n);
+    }
+    _CCCL_CATCH_ALL
+    {
+      // catch anything
+    }
   } // end deallocate()
 
   inline _CCCL_HOST_DEVICE bool operator==(no_throw_allocator const& other)

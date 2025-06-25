@@ -167,7 +167,7 @@ struct sync_wait_t
       }
       else if constexpr (_CUDA_VSTD::is_same_v<_Error, ::std::error_code>)
       {
-        throw ::std::system_error(__err);
+        _CCCL_THROW(::std::system_error(__err));
       }
       else if constexpr (_CUDA_VSTD::is_same_v<_Error, cudaError_t>)
       {
@@ -175,7 +175,7 @@ struct sync_wait_t
       }
       else
       {
-        throw static_cast<_Error&&>(__err);
+        _CCCL_THROW(static_cast<_Error&&>(__err));
       }
     }
   };

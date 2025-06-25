@@ -48,7 +48,7 @@ malloc_allocator<T, System, Pointer>::allocate(typename malloc_allocator<T, Syst
 
   if (result.get() == 0)
   {
-    throw thrust::system::detail::bad_alloc("malloc_allocator::allocate: malloc failed");
+    _CCCL_THROW(thrust::system::detail::bad_alloc("malloc_allocator::allocate: malloc failed"));
   } // end if
 
   return result;
