@@ -59,7 +59,7 @@
 
 [[noreturn]] _CCCL_API inline void __throw_bad_function_call()
 {
-  _CCCL_THROW(throw ::std::bad_function_call());
+  _CCCL_THROW(::std::bad_function_call());
 }
 
 template <class _Fp>
