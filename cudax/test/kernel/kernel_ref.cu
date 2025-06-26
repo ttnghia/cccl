@@ -9,6 +9,7 @@
 //===----------------------------------------------------------------------===//
 
 #include <cuda/std/cstddef>
+#include <cuda/std/optional>
 #include <cuda/std/type_traits>
 #include <cuda/std/utility>
 
@@ -146,6 +147,24 @@ extern "C" __global__ void kernel_rt(int* data, int size)
 }
 #endif // _CCCL_CTK_AT_LEAST(12, 1)
 
+template <const auto& Attr, ::CUfunction_attribute ExpectedAttr, class ExpectedResult, class Signature>
+[[maybe_unused]] auto test_kernel_attribute(
+  cudax::kernel_ref<Signature> kernel,
+  cudax::device_ref dev,
+  cuda::std::optional<ExpectedResult> expected_value = cuda::std::nullopt)
+{
+  STATIC_REQUIRE(Attr == ExpectedAttr);
+
+  auto result = kernel.attribute(Attr, dev);
+  STATIC_REQUIRE(::cuda::std::is_same_v<decltype(result), ExpectedResult>);
+  if (expected_value.has_value())
+  {
+    CUDAX_REQUIRE(result == expected_value.value());
+  }
+  CUDAX_REQUIRE(result == Attr(kernel, dev));
+  return result;
+}
+
 C2H_CCCLRT_TEST("Kernel reference", "[kernel_ref]")
 {
   CUlibrary lib{};
@@ -236,71 +255,31 @@ C2H_CCCLRT_TEST("Kernel reference", "[kernel_ref]")
   }
 #endif // _CCCL_CTK_AT_LEAST(12, 3)
 
-  SECTION("Max threads per block")
+  SECTION("Attributes")
   {
-    STATIC_REQUIRE(
-      cuda::std::is_same_v<decltype(cuda::std::declval<cudax::kernel_ref<void()>>().max_threads_per_block(device)),
-                           unsigned>);
-
     cudax::kernel_ref<void(int*, int)> kernel_ref{kernel_ptx1_handle};
-    CUDAX_REQUIRE(kernel_ref.max_threads_per_block(device) > 0);
-  }
 
-  SECTION("Static shared memory size")
-  {
-    STATIC_REQUIRE(
-      cuda::std::is_same_v<decltype(cuda::std::declval<cudax::kernel_ref<void()>>().static_shared_memory_size(device)),
-                           cuda::std::size_t>);
-
-    cudax::kernel_ref<void(int*, int)> kernel_ref{kernel_ptx1_handle};
-    CUDAX_REQUIRE(kernel_ref.static_shared_memory_size(device) >= sizeof(int) * 32);
-  }
-
-  SECTION("Constant memory size")
-  {
-    STATIC_REQUIRE(
-      cuda::std::is_same_v<decltype(cuda::std::declval<cudax::kernel_ref<void()>>().const_memory_size(device)),
-                           cuda::std::size_t>);
-
-    cudax::kernel_ref<void(int*, int)> kernel_ref{kernel_ptx1_handle};
-    CUDAX_REQUIRE(kernel_ref.const_memory_size(device) >= sizeof(int));
-  }
-
-  SECTION("Local memory size")
-  {
-    STATIC_REQUIRE(
-      cuda::std::is_same_v<decltype(cuda::std::declval<cudax::kernel_ref<void()>>().local_memory_size(device)),
-                           cuda::std::size_t>);
-
-    cudax::kernel_ref<void(int*, int)> kernel_ref{kernel_ptx1_handle};
-    [[maybe_unused]] const auto local_size = kernel_ref.local_memory_size(device);
-  }
-
-  SECTION("Number of registers")
-  {
-    STATIC_REQUIRE(cuda::std::is_same_v<decltype(cuda::std::declval<cudax::kernel_ref<void()>>().num_regs(device)),
-                                        cuda::std::size_t>);
-
-    cudax::kernel_ref<void(int*, int)> kernel_ref{kernel_ptx1_handle};
-    CUDAX_REQUIRE(kernel_ref.num_regs(device) > 0);
-  }
-
-  SECTION("Virtual architecture")
-  {
-    STATIC_REQUIRE(
-      cuda::std::is_same_v<decltype(cuda::std::declval<cudax::kernel_ref<void()>>().virtual_arch(device)), int>);
-
-    cudax::kernel_ref<void(int*, int)> kernel_ref{kernel_ptx1_handle};
-    CUDAX_REQUIRE(kernel_ref.virtual_arch(device) == 520);
-  }
-
-  SECTION("Real architecture")
-  {
-    STATIC_REQUIRE(
-      cuda::std::is_same_v<decltype(cuda::std::declval<cudax::kernel_ref<void()>>().real_arch(device)), int>);
-
-    cudax::kernel_ref<void(int*, int)> kernel_ref{kernel_ptx1_handle};
-    CUDAX_REQUIRE(kernel_ref.real_arch(device) == device.arch_traits().compute_capability);
+    test_kernel_attribute<cudax::kernel_attributes::max_threads_per_block, CU_FUNC_ATTRIBUTE_MAX_THREADS_PER_BLOCK, int>(
+      kernel_ref, device);
+    test_kernel_attribute<cudax::kernel_attributes::shared_memory_size,
+                          CU_FUNC_ATTRIBUTE_SHARED_SIZE_BYTES,
+                          cuda::std::size_t>(kernel_ref, device, sizeof(int) * 32);
+    test_kernel_attribute<cudax::kernel_attributes::const_memory_size,
+                          CU_FUNC_ATTRIBUTE_CONST_SIZE_BYTES,
+                          cuda::std::size_t>(kernel_ref, device, sizeof(int));
+    test_kernel_attribute<cudax::kernel_attributes::local_memory_size,
+                          CU_FUNC_ATTRIBUTE_LOCAL_SIZE_BYTES,
+                          cuda::std::size_t>(kernel_ref, device);
+    test_kernel_attribute<cudax::kernel_attributes::num_regs, CU_FUNC_ATTRIBUTE_NUM_REGS, int>(kernel_ref, device);
+    test_kernel_attribute<cudax::kernel_attributes::virtual_arch, CU_FUNC_ATTRIBUTE_PTX_VERSION, int>(
+      kernel_ref, device, 520);
+    test_kernel_attribute<cudax::kernel_attributes::real_arch, CU_FUNC_ATTRIBUTE_BINARY_VERSION, int>(
+      kernel_ref, device, device.arch_traits().compute_capability);
+    test_kernel_attribute<cudax::kernel_attributes::cache_mode_ca, CU_FUNC_ATTRIBUTE_CACHE_MODE_CA, bool>(
+      kernel_ref, device, false);
+    test_kernel_attribute<cudax::kernel_attributes::cluster_size_must_be_set,
+                          CU_FUNC_ATTRIBUTE_CLUSTER_SIZE_MUST_BE_SET,
+                          bool>(kernel_ref, device, false);
   }
 
   SECTION("Get handle")

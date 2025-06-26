@@ -96,91 +96,19 @@ public:
   }
 #endif // _CCCL_CTK_AT_LEAST(12, 3)
 
-  //! @brief Get the maximum number of threads per block for the kernel
+  //! @brief Retrieve the specified attribute for the kernel on the specified device
   //!
-  //! @param __dev The device for which to query the maximum threads per block
+  //! @param __attr The attribute to query. See `kernel::attributes` for the available
+  //!        attributes.
+  //! @param __dev The device for which to query the attribute
   //!
-  //! @return The maximum number of threads per block for the kernel on the specified device
+  //! @throws cuda_error if the attribute query fails
   //!
-  //! @throws cuda_error if the maximum threads per block cannot be obtained
-  [[nodiscard]] unsigned max_threads_per_block(device_ref __dev) const
+  //! @sa kernel::attributes
+  template <typename _Attr>
+  [[nodiscard]] auto attribute(_Attr __attr, device_ref __dev) const
   {
-    return static_cast<unsigned>(__get_attrib(::CUfunction_attribute::CU_FUNC_ATTRIBUTE_MAX_THREADS_PER_BLOCK, __dev));
-  }
-
-  //! @brief Get the size of statically allocated shared memory for the kernel
-  //!
-  //! @param __dev The device for which to query the shared memory size
-  //!
-  //! @return The size in bytes of statically allocated shared memory for the kernel on the specified device
-  //!
-  //! @throws cuda_error if the shared memory size cannot be obtained
-  [[nodiscard]] _CUDA_VSTD::size_t static_shared_memory_size(device_ref __dev) const
-  {
-    return static_cast<_CUDA_VSTD::size_t>(
-      __get_attrib(::CUfunction_attribute::CU_FUNC_ATTRIBUTE_SHARED_SIZE_BYTES, __dev));
-  }
-
-  //! @brief Get the size of user-allocated constant memory for the kernel
-  //!
-  //! @param __dev The device for which to query the constant memory size
-  //!
-  //! @return The size in bytes of user-allocated constant memory for the kernel on the specified device
-  //!
-  //! @throws cuda_error if the constant memory size cannot be obtained
-  [[nodiscard]] _CUDA_VSTD::size_t const_memory_size(device_ref __dev) const
-  {
-    return static_cast<_CUDA_VSTD::size_t>(
-      __get_attrib(::CUfunction_attribute::CU_FUNC_ATTRIBUTE_CONST_SIZE_BYTES, __dev));
-  }
-
-  //! @brief Get the size of local memory used by each thread of the kernel
-  //!
-  //! @param __dev The device for which to query the local memory size
-  //!
-  //! @return The size in bytes of local memory used by each thread of the kernel on the specified device
-  //!
-  //! @throws cuda_error if the local memory size cannot be obtained
-  [[nodiscard]] _CUDA_VSTD::size_t local_memory_size(device_ref __dev) const
-  {
-    return static_cast<_CUDA_VSTD::size_t>(
-      __get_attrib(::CUfunction_attribute::CU_FUNC_ATTRIBUTE_LOCAL_SIZE_BYTES, __dev));
-  }
-
-  //! @brief Get the number of registers used by each thread of the kernel
-  //!
-  //! @param __dev The device for which to query the number of registers
-  //!
-  //! @return The number of registers used by each thread of the kernel on the specified device
-  //!
-  //! @throws cuda_error if the number of registers cannot be obtained
-  [[nodiscard]] _CUDA_VSTD::size_t num_regs(device_ref __dev) const
-  {
-    return static_cast<_CUDA_VSTD::size_t>(__get_attrib(::CUfunction_attribute::CU_FUNC_ATTRIBUTE_NUM_REGS, __dev));
-  }
-
-  //! @brief Get the virtual architecture for which the kernel was compiled
-  //!
-  //! @param __dev The device for which to query the virtual architecture
-  //!
-  //! @return The virtual architecture for which the kernel was compiled on the specified device
-  //!
-  //! @throws cuda_error if the virtual architecture cannot be obtained
-  [[nodiscard]] int virtual_arch(device_ref __dev) const
-  {
-    return __get_attrib(::CUfunction_attribute::CU_FUNC_ATTRIBUTE_PTX_VERSION, __dev) * 10;
-  }
-
-  //! @brief Get the real architecture for which the kernel was compiled
-  //!
-  //! @param __dev The device for which to query the real architecture
-  //!
-  //! @return The real architecture for which the kernel was compiled on the specified device
-  //!
-  //! @throws cuda_error if the real architecture cannot be obtained
-  [[nodiscard]] int real_arch(device_ref __dev) const
-  {
-    return __get_attrib(::CUfunction_attribute::CU_FUNC_ATTRIBUTE_BINARY_VERSION, __dev) * 10;
+    return __attr(*this, __dev);
   }
 
   //! @brief Retrieve the native kernel handle

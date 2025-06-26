@@ -11,6 +11,7 @@
 #ifndef __CUDAX_KERNEL__
 #define __CUDAX_KERNEL__
 
+#include <cuda/experimental/__kernel/attributes.cuh>
 #include <cuda/experimental/__kernel/kernel_ref.cuh>
 
 #endif // __CUDAX_KERNEL__
