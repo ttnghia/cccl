@@ -46,11 +46,6 @@ class kernel_ref;
 template <class... _Args>
 class kernel_ref<void(_Args...)>
 {
-  [[nodiscard]] int __get_attrib(::CUfunction_attribute __attr, device_ref __dev) const
-  {
-    return __detail::driver::kernelGetAttribute(__attr, __kernel_, __detail::driver::deviceGet(__dev.get()));
-  }
-
 public:
 #if _CCCL_CTK_BELOW(12, 1)
   using value_type = ::CUkernel;
