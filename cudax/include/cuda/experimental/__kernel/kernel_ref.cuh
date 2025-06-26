@@ -159,26 +159,26 @@ public:
     return static_cast<_CUDA_VSTD::size_t>(__get_attrib(::CUfunction_attribute::CU_FUNC_ATTRIBUTE_NUM_REGS, __dev));
   }
 
-  //! @brief Get the PTX version for which the kernel was compiled
+  //! @brief Get the virtual architecture for which the kernel was compiled
   //!
-  //! @param __dev The device for which to query the PTX version
+  //! @param __dev The device for which to query the virtual architecture
   //!
-  //! @return The PTX version for which the kernel was compiled on the specified device
+  //! @return The virtual architecture for which the kernel was compiled on the specified device
   //!
-  //! @throws cuda_error if the PTX version cannot be obtained
-  [[nodiscard]] int ptx_version(device_ref __dev) const
+  //! @throws cuda_error if the virtual architecture cannot be obtained
+  [[nodiscard]] int virtual_arch(device_ref __dev) const
   {
     return __get_attrib(::CUfunction_attribute::CU_FUNC_ATTRIBUTE_PTX_VERSION, __dev) * 10;
   }
 
-  //! @brief Get the binary version for which the kernel was compiled
+  //! @brief Get the real architecture for which the kernel was compiled
   //!
-  //! @param __dev The device for which to query the binary version
+  //! @param __dev The device for which to query the real architecture
   //!
-  //! @return The binary version for which the kernel was compiled on the specified device
+  //! @return The real architecture for which the kernel was compiled on the specified device
   //!
-  //! @throws cuda_error if the binary version cannot be obtained
-  [[nodiscard]] int binary_version(device_ref __dev) const
+  //! @throws cuda_error if the real architecture cannot be obtained
+  [[nodiscard]] int real_arch(device_ref __dev) const
   {
     return __get_attrib(::CUfunction_attribute::CU_FUNC_ATTRIBUTE_BINARY_VERSION, __dev) * 10;
   }

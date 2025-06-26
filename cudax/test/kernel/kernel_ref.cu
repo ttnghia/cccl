@@ -285,22 +285,22 @@ C2H_CCCLRT_TEST("Kernel reference", "[kernel_ref]")
     CUDAX_REQUIRE(kernel_ref.num_regs(device) > 0);
   }
 
-  SECTION("PTX version")
+  SECTION("Virtual architecture")
   {
     STATIC_REQUIRE(
-      cuda::std::is_same_v<decltype(cuda::std::declval<cudax::kernel_ref<void()>>().ptx_version(device)), int>);
+      cuda::std::is_same_v<decltype(cuda::std::declval<cudax::kernel_ref<void()>>().virtual_arch(device)), int>);
 
     cudax::kernel_ref<void(int*, int)> kernel_ref{kernel_ptx1_handle};
-    CUDAX_REQUIRE(kernel_ref.ptx_version(device) == 520);
+    CUDAX_REQUIRE(kernel_ref.virtual_arch(device) == 520);
   }
 
-  SECTION("Binary version")
+  SECTION("Real architecture")
   {
     STATIC_REQUIRE(
-      cuda::std::is_same_v<decltype(cuda::std::declval<cudax::kernel_ref<void()>>().binary_version(device)), int>);
+      cuda::std::is_same_v<decltype(cuda::std::declval<cudax::kernel_ref<void()>>().real_arch(device)), int>);
 
     cudax::kernel_ref<void(int*, int)> kernel_ref{kernel_ptx1_handle};
-    CUDAX_REQUIRE(kernel_ref.binary_version(device) == device.arch_traits().compute_capability);
+    CUDAX_REQUIRE(kernel_ref.real_arch(device) == device.arch_traits().compute_capability);
   }
 
   SECTION("Get handle")
