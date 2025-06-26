@@ -168,7 +168,7 @@ _CCCL_REQUIRES(is_arithmetic_v<_A1>)
 #endif // _CCCL_HAS_FLOAT128()
 
 _CCCL_TEMPLATE(typename _A1, typename _A2)
-_CCCL_REQUIRES(is_arithmetic_v<_A1> _CCCL_AND is_arithmetic_v<_A2>))
+_CCCL_REQUIRES(is_arithmetic_v<_A1> _CCCL_AND is_arithmetic_v<_A2>)
 [[nodiscard]] _CCCL_API inline __promote_t<_A1, _A2> fmax(_A1 __x, _A2 __y) noexcept
 {
   using __result_type = __promote_t<_A1, _A2>;
