@@ -142,7 +142,7 @@ _CCCL_REQUIRES(is_arithmetic_v<_A1>)
 
 #endif // _LIBCUDACXX_HAS_NVBF16()
 
-#if _CCCL_HAS_FLOAT128()
+#if _CCCL_HAS_CTK() && _CCCL_HAS_FLOAT128()
 
 [[nodiscard]] _CCCL_API inline __float128 fmax(__float128 __x, __float128 __y) noexcept
 {
@@ -165,7 +165,7 @@ _CCCL_REQUIRES(is_arithmetic_v<_A1>)
   return _CUDA_VSTD::fmax(static_cast<__float128>(__x), __y);
 }
 
-#endif // _CCCL_HAS_FLOAT128()
+#endif // _CCCL_HAS_CTK() &&  _CCCL_HAS_FLOAT128()
 
 _CCCL_TEMPLATE(typename _A1, typename _A2)
 _CCCL_REQUIRES(is_arithmetic_v<_A1> _CCCL_AND is_arithmetic_v<_A2>)
@@ -279,7 +279,7 @@ _CCCL_REQUIRES(is_arithmetic_v<_A1>)
 
 #endif // _LIBCUDACXX_HAS_NVBF16()
 
-#if _CCCL_HAS_FLOAT128()
+#if _CCCL_HAS_CTK() && _CCCL_HAS_FLOAT128()
 
 [[nodiscard]] _CCCL_API inline __float128 fmin(__float128 __x, __float128 __y) noexcept
 {
@@ -302,7 +302,7 @@ _CCCL_REQUIRES(is_arithmetic_v<_A1>)
   return _CUDA_VSTD::fmin(static_cast<__float128>(__x), __y);
 }
 
-#endif // _CCCL_HAS_FLOAT128()
+#endif // _CCCL_HAS_CTK() && _CCCL_HAS_FLOAT128()
 
 _CCCL_TEMPLATE(typename _A1, typename _A2)
 _CCCL_REQUIRES(is_arithmetic_v<_A1> _CCCL_AND is_arithmetic_v<_A2>)
