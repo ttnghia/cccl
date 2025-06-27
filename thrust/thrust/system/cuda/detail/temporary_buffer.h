@@ -30,6 +30,8 @@
 #include <thrust/system/cuda/detail/par.h>
 #include <thrust/system/detail/bad_alloc.h>
 
+#include <cuda/std/__exception/exception_macros.h>
+
 THRUST_NAMESPACE_BEGIN
 namespace cuda_cub
 {

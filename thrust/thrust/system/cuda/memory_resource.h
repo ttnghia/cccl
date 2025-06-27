@@ -37,6 +37,8 @@
 #include <thrust/system/cuda/pointer.h>
 #include <thrust/system/detail/bad_alloc.h>
 
+#include <cuda/std/__exception/exception_macros.h>
+
 THRUST_NAMESPACE_BEGIN
 
 namespace system

@@ -25,6 +25,7 @@
 #  pragma system_header
 #endif // no system header
 
+#include <cuda/std/__exception/exception_macros.h>
 #include <cuda/std/source_location>
 
 #include <cuda/experimental/__stf/utility/traits.cuh>

@@ -43,6 +43,8 @@
 #include <thrust/iterator/iterator_traits.h>
 #include <thrust/system/cuda/detail/execution_policy.h>
 
+#include <cuda/std/__exception/exception_macros.h>
+
 #include <nv/target>
 
 #if !_CCCL_COMPILER(NVRTC)

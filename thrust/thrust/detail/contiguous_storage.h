@@ -30,6 +30,7 @@
 #include <thrust/detail/execution_policy.h>
 #include <thrust/iterator/detail/normal_iterator.h>
 
+#include <cuda/std/__exception/exception_macros.h>
 #include <cuda/std/utility>
 
 #include <stdexcept>

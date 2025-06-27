@@ -36,6 +36,8 @@
 #include <thrust/system/cuda/detail/util.h>
 #include <thrust/system/detail/bad_alloc.h>
 
+#include <cuda/std/__exception/exception_macros.h>
+
 #ifdef THRUST_CACHING_DEVICE_MALLOC
 #  include <cub/util_allocator.cuh>
 #endif
