@@ -21,6 +21,7 @@
 #  pragma system_header
 #endif // no system header
 
+#include <cuda/std/__exception/exception_macros.h>
 #include <cuda/std/__type_traits/is_callable.h>
 #include <cuda/std/__type_traits/type_list.h>
 #include <cuda/std/__type_traits/type_set.h>

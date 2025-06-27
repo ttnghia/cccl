@@ -26,6 +26,7 @@
 #include <cuda/std/__concepts/constructible.h>
 #include <cuda/std/__concepts/convertible_to.h>
 #include <cuda/std/__concepts/same_as.h>
+#include <cuda/std/__exception/exception_macros.h>
 #include <cuda/std/__iterator/concepts.h>
 #include <cuda/std/__iterator/default_sentinel.h>
 #include <cuda/std/__iterator/incrementable_traits.h>

@@ -10,7 +10,7 @@
 
 #define CCCL_DISABLE_EXCEPTIONS
 
-#include <cuda/std/__cccl/exceptions.h>
+#include <cuda/std/__exception/exception_macros.h>
 #include <cuda/std/cassert>
 
 #include <nv/target>

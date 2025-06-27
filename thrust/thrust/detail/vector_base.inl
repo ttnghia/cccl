@@ -38,6 +38,7 @@
 
 #include <cuda/std/__algorithm/max.h>
 #include <cuda/std/__algorithm/min.h>
+#include <cuda/std/__exception/exception_macros.h>
 #include <cuda/std/type_traits>
 
 #include <stdexcept>

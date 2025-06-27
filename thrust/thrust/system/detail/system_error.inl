@@ -28,6 +28,8 @@
 
 #include <thrust/system/system_error.h>
 
+#include <cuda/std/__exception/exception_macros.h>
+
 THRUST_NAMESPACE_BEGIN
 
 namespace system

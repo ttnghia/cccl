@@ -26,6 +26,8 @@
 #  pragma system_header
 #endif // no system header
 
+#include <cuda/std/__exception/exception_macros.h>
+
 #include <nv/target>
 
 THRUST_NAMESPACE_BEGIN

@@ -31,6 +31,7 @@
 
 #include <cuda/__stream/stream_ref.h>
 #include <cuda/std/__algorithm/max.h>
+#include <cuda/std/__exception/exception_macros.h>
 
 CUB_NAMESPACE_BEGIN
 
