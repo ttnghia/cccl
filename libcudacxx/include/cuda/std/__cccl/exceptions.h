@@ -66,11 +66,9 @@
       NV_IF_ELSE_TARGET(NV_IS_HOST, (throw;), (_CUDA_VSTD_NOVERSION::terminate();)) \
     } while (false)
 #else // ^^^ _CCCL_HAS_EXCEPTIONS() ^^^ / vvv !_CCCL_HAS_EXCEPTIONS() vvv
-#  define _CCCL_TRY if constexpr (true)
-#  define _CCCL_CATCH(...)                                                   \
-    if constexpr (::__cccl_catch_any_lvalue __catch_any_lvalue_obj{}; false) \
-      if constexpr (__VA_ARGS__ = __catch_any_lvalue_obj; false)
-#  define _CCCL_CATCH_ALL  if constexpr (false)
+#  define _CCCL_TRY        if constexpr (::__cccl_catch_any_lvalue __catch_any_lvalue_obj{}; true)
+#  define _CCCL_CATCH(...) else if constexpr (false) for (__VA_ARGS__ = __catch_any_lvalue_obj; false;)
+#  define _CCCL_CATCH_ALL  else
 #  define _CCCL_THROW(...) _CUDA_VSTD_NOVERSION::terminate();
 #  define _CCCL_RETHROW    _CUDA_VSTD_NOVERSION::terminate();
 #endif // ^^^ !_CCCL_HAS_EXCEPTIONS() ^^^
