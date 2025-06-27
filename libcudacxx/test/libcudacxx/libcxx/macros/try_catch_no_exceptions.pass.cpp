@@ -84,6 +84,32 @@ __host__ __device__ void test()
   {
     assert(false);
   }
+
+  // 4. test pathological case (try/catch inside an if without braces)
+
+  // clang-format off
+  if (true)
+    _CCCL_TRY
+    {
+      assert(true);
+    }
+    _CCCL_CATCH (const Exception& e)
+    {
+      assert(e.value == 0);
+      assert(false);
+    }
+    _CCCL_CATCH (const ExceptionBase& e)
+    {
+      assert(e.value == 0);
+      assert(false);
+    }
+    _CCCL_CATCH_ALL
+    {
+      assert(false);
+    }
+  else
+    assert(false);
+  // clang-format on
 }
 
 int main(int, char**)
