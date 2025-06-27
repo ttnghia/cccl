@@ -78,8 +78,8 @@ _LIBCUDACXX_END_NAMESPACE_STD
 #  define _CCCL_TRY        if constexpr ([[maybe_unused]] _CUDA_VSTD::__cccl_catch_any_lvalue __catch_any_lvalue_obj{}; true)
 #  define _CCCL_CATCH(...) else if constexpr (false) for (__VA_ARGS__ = __catch_any_lvalue_obj; false;)
 #  define _CCCL_CATCH_ALL  else
-#  define _CCCL_THROW(...) _CUDA_VSTD_NOVERSION::terminate();
-#  define _CCCL_RETHROW    _CUDA_VSTD_NOVERSION::terminate();
+#  define _CCCL_THROW(...) _CUDA_VSTD_NOVERSION::terminate()
+#  define _CCCL_RETHROW    _CUDA_VSTD_NOVERSION::terminate()
 #endif // ^^^ !_CCCL_HAS_EXCEPTIONS() ^^^
 
 #endif // _LIBCUDACXX___EXCEPTION_EXCEPTION_MACROS_H
