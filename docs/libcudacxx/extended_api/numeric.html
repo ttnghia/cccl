@@ -1112,8 +1112,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/classcuda_1_1experimental_1_1stf_1_1task__dep__vector.html">cuda::experimental::stf::task_dep_vector</a></li>
 </ul>
 </details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../cudax/memory_resource.html">Memory Resources</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../cudax/api/structcuda_1_1experimental_1_1shared__resource.html">cuda::experimental::shared_resource</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../cudax/memory_resource.html">Memory Resources</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../cudax/graph.html">Graphs library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -1289,7 +1288,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/structcuda_1_1experimental_1_1path__builder.html">cuda::experimental::path_builder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/structcuda_1_1experimental_1_1stf_1_1pooled__allocator__config.html">cuda::experimental::stf::pooled_allocator_config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/structcuda_1_1experimental_1_1stf_1_1scalar__view.html">cuda::experimental::stf::scalar_view</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../cudax/api/structcuda_1_1experimental_1_1shared__resource.html">cuda::experimental::shared_resource</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/structcuda_1_1experimental_1_1stream.html">cuda::experimental::stream</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/structcuda_1_1experimental_1_1stf_1_1stream__pool.html">cuda::experimental::stf::stream_pool</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/structcuda_1_1experimental_1_1stream__ref.html">cuda::experimental::stream_ref</a></li>
@@ -1314,9 +1312,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/namespacecuda_1_1experimental_1a591c99d80c8d7f96a29174492e72a859.html">cuda::experimental::distribute</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/namespacecuda_1_1experimental_1a64c529b2b7d858f06b3d45a5ee1967c3.html">cuda::experimental::dynamic_smem_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/namespacecuda_1_1experimental_1a5b4677b4c5bc188a0144206ace982c58.html">cuda::experimental::dynamic_smem_span</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../cudax/api/namespacecuda_1_1experimental_1a220f357be074348d480be71c228e1ccc.html">cuda::experimental::host_launch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/namespacecuda_1_1experimental_1aa8263d79aa1b3db93c6b40ca61634080.html">cuda::experimental::launch</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../cudax/api/namespacecuda_1_1experimental_1a6bd77db8b90bae41aca5ae2cbb485f2f.html">cuda::experimental::make_shared_resource</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/namespacecuda_1_1experimental_1_1hierarchy_1ad3964a2f9adfff23c7a9d67ecb06d789.html">cuda::experimental::hierarchy::rank</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/namespacecuda_1_1experimental_1_1hierarchy_1afae0df2b4c67255ba59862e445fd616a.html">cuda::experimental::hierarchy::count</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cudax/api/namespacecuda_1_1experimental_1_1hierarchy_1a0005c3898faf2106b9f7ae078ace2d10.html">cuda::experimental::hierarchy::index</a></li>
@@ -1511,6 +1507,49 @@
   <section id="numeric">
 <span id="libcudacxx-extended-api-numeric"></span><h1>Numeric<a class="headerlink" href="#numeric" title="Link to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 19.2%" />
+<col style="width: 34.6%" />
+<col style="width: 23.1%" />
+<col style="width: 23.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Header</strong></p></th>
+<th class="head"><p><strong>Content</strong></p></th>
+<th class="head"><p><strong>CCCL Availability</strong></p></th>
+<th class="head"><p><strong>CUDA Toolkit Availability</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="numeric/narrow.html#libcudacxx-extended-api-numeric-narrow"><span class="std std-ref">cuda::narrow</span></a></p></td>
+<td><p>Casts a value and checks whether the value has changed</p></td>
+<td><p>CCCL 3.1.0</p></td>
+<td><p>CUDA 13.1</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="numeric/overflow_result.html#libcudacxx-extended-api-numeric-overflow-result"><span class="std std-ref">cuda::overflow_result</span></a></p></td>
+<td><p>Represents the result of arithmetic operations that may overflow</p></td>
+<td><p>CCCL 3.0.0</p></td>
+<td><p>CUDA 13.0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="numeric/add_overflow.html#libcudacxx-extended-api-numeric-add-overflow"><span class="std std-ref">cuda::add_overflow</span></a></p></td>
+<td><p>Performs addition with overflow checking</p></td>
+<td><p>CCCL 3.2.0</p></td>
+<td><p>CUDA 13.2</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="numeric/sub_overflow.html#libcudacxx-extended-api-numeric-sub-overflow"><span class="std std-ref">cuda::sub_overflow</span></a></p></td>
+<td><p>Performs subtraction with overflow checking</p></td>
+<td><p>CCCL 3.2.0</p></td>
+<td><p>CUDA 13.2</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="numeric/div_overflow.html#libcudacxx-extended-api-numeric-div-overflow"><span class="std std-ref">cuda::div_overflow</span></a></p></td>
+<td><p>Performs division with overflow checking</p></td>
+<td><p>CCCL 3.2.0</p></td>
+<td><p>CUDA 13.2</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </section>
 
