@@ -355,14 +355,21 @@
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../libcudacxx/api/index.html">API reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classbasic__any__resource.html">basic_any_resource</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classbasic__resource__ref.html">basic_resource_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classcompute__capability.html">compute_capability</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classconstant__iterator.html">constant_iterator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classcounting__iterator.html">counting_iterator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classdevice__memory__pool__ref.html">device_memory_pool_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classdevice__ref.html">device_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classdiscard__iterator.html">discard_iterator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classevent.html">event</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classevent__ref.html">event_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classlegacy__managed__memory__resource.html">legacy_managed_memory_resource</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classlegacy__pinned__memory__resource.html">legacy_pinned_memory_resource</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classmanaged__memory__pool__ref.html">managed_memory_pool_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classpermutation__iterator.html">permutation_iterator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classpinned__memory__pool__ref.html">pinned_memory_pool_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classshuffle__iterator.html">shuffle_iterator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classstream__ref.html">stream_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classstrided__iterator.html">strided_iterator</a></li>
@@ -377,8 +384,17 @@
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structarch__traits__t.html">arch_traits_t</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structdevice__attributes_1_1compute__capability__t.html">device_attributes::compute_capability_t</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structcopy__configuration.html">copy_configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structdevice__accessible.html">device_accessible</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structdevice__memory__pool.html">device_memory_pool</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structget__stream__t.html">get_stream_t</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structhost__accessible.html">host_accessible</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structmanaged__memory__pool.html">managed_memory_pool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structmemory__pool__properties.html">memory_pool_properties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structpinned__memory__pool.html">pinned_memory_pool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structproperties__list.html">properties_list</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structshared__resource.html">shared_resource</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structstream.html">stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structsynchronous__resource__adapter.html">synchronous_resource_adapter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/group__iterators_1ga83ac1a6f53e106d83b8f7db6757f7334.html">zip_iterator::difference_type</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/group__iterators_1gadcd3d726e080dfd5ec73d1816aa41744.html">zip_iterator::iterator_concept</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/group__iterators_1ga3a57fccd85438fe6ac517f59802807b5.html">zip_iterator::pointer</a></li>
@@ -1135,11 +1151,17 @@
 <li class="toctree-l3"><a class="reference internal" href="../cudax/index.html">Overview</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../cudax/container.html">Containers library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="../cudax/api/classcuda_1_1experimental_1_1uninitialized__buffer.html">cuda::experimental::uninitialized_buffer</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../cudax/api/classcuda_1_1experimental_1_1stf_1_1small__vector.html">cuda::experimental::stf::small_vector</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../cudax/api/classcuda_1_1experimental_1_1stf_1_1task__dep__vector.html">cuda::experimental::stf::task_dep_vector</a></li>
 </ul>
 </details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../cudax/memory_resource.html">Memory Resources</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+<li class="toctree-l3 has-children"><a class="reference internal" href="../cudax/memory_resource.html">Memory Resources</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classbasic__any__resource.html">basic_any_resource</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structmemory__pool__properties.html">memory_pool_properties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structdevice__memory__pool.html">device_memory_pool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structpinned__memory__pool.html">pinned_memory_pool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structmanaged__memory__pool.html">managed_memory_pool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classlegacy__pinned__memory__resource.html">legacy_pinned_memory_resource</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/classlegacy__managed__memory__resource.html">legacy_managed_memory_resource</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../libcudacxx/api/structshared__resource.html">shared_resource</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../cudax/graph.html">Graphs library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -4054,6 +4076,46 @@ to transform the input before performing a reduction.</p>
 <p class="rubric">Example</p>
 <p>The code snippet below demonstrates the usage of a <code class="docutils literal notranslate"><span class="pre">TransformOutputIterator</span></code> to transform the output
 of a reduction before writing to an output array.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TransformOutputIterator example demonstrating reduction with transform output iterator.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">cupy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">cuda.compute</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cuda.compute</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">OpKind</span><span class="p">,</span>
+    <span class="n">TransformOutputIterator</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Create input and output arrays</span>
+<span class="n">d_input</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">d_output</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+
+<span class="c1"># Define the transform operation to be applied</span>
+<span class="c1"># to the result of the sum reduction.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mf">0.5</span>
+
+
+<span class="c1"># Create transform output iterator</span>
+<span class="n">d_out_it</span> <span class="o">=</span> <span class="n">TransformOutputIterator</span><span class="p">(</span><span class="n">d_output</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">)</span>
+
+
+<span class="c1"># Apply a sum reduction into the transform output iterator</span>
+<span class="n">cuda</span><span class="o">.</span><span class="n">compute</span><span class="o">.</span><span class="n">reduce_into</span><span class="p">(</span>
+    <span class="n">d_input</span><span class="p">,</span>
+    <span class="n">d_out_it</span><span class="p">,</span>
+    <span class="n">OpKind</span><span class="o">.</span><span class="n">PLUS</span><span class="p">,</span>
+    <span class="nb">len</span><span class="p">(</span><span class="n">d_input</span><span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">cp</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">d_output</span><span class="p">,</span> <span class="n">cp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">d_input</span><span class="p">)),</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4405,9 +4467,9 @@ pass-by-value semantics when used with Numba CUDA device functions.</p>
 <span class="w">    </span><span class="kp">.param</span><span class="w"> </span><span class="kt">.b64</span><span class="w"> </span><span class="nv">foo_param_1</span><span class="o">,</span>
 <span class="w">    </span><span class="kp">.param</span><span class="w"> </span><span class="kt">.b32</span><span class="w"> </span><span class="nv">foo_param_2</span><span class="o">,</span>
 <span class="w">    </span><span class="kp">.param</span><span class="w"> </span><span class="kt">.b64</span><span class="w"> </span><span class="nv">foo_param_3</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>)</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="cuda.compute.struct.gpu_struct">
 <span class="sig-prename descclassname"><span class="pre">cuda.compute.struct.</span></span><span class="sig-name descname"><span class="pre">gpu_struct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AnonymousStruct'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cuda.compute.struct.gpu_struct" title="Link to this definition">#</a></dt>
