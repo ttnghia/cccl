@@ -1657,17 +1657,12 @@ of a sequence of numbers.</p>
     <span class="n">TransformIterator</span><span class="p">,</span>
 <span class="p">)</span>
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">transform_op</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-    <span class="k">return</span> <span class="o">-</span><span class="n">a</span> <span class="k">if</span> <span class="n">a</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">a</span>
-
-
 <span class="c1"># Prepare the input and output arrays.</span>
 <span class="n">first_item</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">num_items</span> <span class="o">=</span> <span class="mi">100</span>
 
 <span class="n">transform_it</span> <span class="o">=</span> <span class="n">TransformIterator</span><span class="p">(</span>
-    <span class="n">CountingIterator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">first_item</span><span class="p">)),</span> <span class="n">transform_op</span>
+    <span class="n">CountingIterator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">first_item</span><span class="p">)),</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="o">-</span><span class="n">a</span> <span class="k">if</span> <span class="n">a</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">a</span>
 <span class="p">)</span>  <span class="c1"># Input sequence</span>
 <span class="n">h_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>  <span class="c1"># Initial value for the reduction</span>
 <span class="n">d_output</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>  <span class="c1"># Storage for output</span>
@@ -1969,7 +1964,7 @@ full collection of <a class="reference external" href="https://github.com/NVIDIA
 
   <p class="copyright">
     
-      Copyright © 2025, NVIDIA Corporation.
+      Copyright © 2026, NVIDIA Corporation.
       <br/>
     
   </p>
