@@ -1520,8 +1520,7 @@
 </ul>
 <p>Availability: CCCL 3.1.0 / CUDA 13.1</p>
 <p>Example:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda/event&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda/stream&gt;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda/stream&gt;</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="nf">record_on_stream</span><span class="p">(</span><span class="n">cuda</span><span class="o">::</span><span class="n">stream_ref</span><span class="w"> </span><span class="n">stream</span><span class="p">,</span><span class="w"> </span><span class="n">cudaEvent_t</span><span class="w"> </span><span class="n">raw_handle</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">cuda</span><span class="o">::</span><span class="n">event_ref</span><span class="w"> </span><span class="n">e</span><span class="p">{</span><span class="n">raw_handle</span><span class="p">};</span>
@@ -1536,8 +1535,7 @@
 It also creates and destroys the native event, can be moved (but not copied), and can release ownership via <code class="docutils literal notranslate"><span class="pre">release()</span></code>. Construction can target a specific
 <code class="docutils literal notranslate"><span class="pre">cuda::device_ref</span></code> or record immediately on a <code class="docutils literal notranslate"><span class="pre">cuda::stream_ref</span></code>.</p>
 <p>Availability: CCCL 3.1.0 / CUDA 13.1</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda/event&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda/stream&gt;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda/stream&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda/devices&gt;</span>
 
 <span class="n">cuda</span><span class="o">::</span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">cuda</span><span class="o">::</span><span class="n">event</span><span class="o">&gt;</span><span class="w"> </span><span class="n">query_and_record_on_stream</span><span class="p">(</span><span class="n">cuda</span><span class="o">::</span><span class="n">stream_ref</span><span class="w"> </span><span class="n">stream</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -1556,8 +1554,7 @@ It also creates and destroys the native event, can be moved (but not copied), an
 <p><code class="docutils literal notranslate"><span class="pre">cuda::timed_event</span></code> is an owning wrapper for a timed <code class="docutils literal notranslate"><span class="pre">cudaEvent_t</span></code>. It inherits from <code class="docutils literal notranslate"><span class="pre">event</span></code> and provides all of its functionality.
 It also supports elapsed-time queries between two events via <code class="docutils literal notranslate"><span class="pre">operator-</span></code>, returning <code class="docutils literal notranslate"><span class="pre">cuda::std::chrono::nanoseconds</span></code>.</p>
 <p>Availability: CCCL 3.1.0 / CUDA 13.1</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda/event&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda/stream&gt;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda/stream&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda/std/chrono&gt;</span>
 
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">F</span><span class="o">&gt;</span>
