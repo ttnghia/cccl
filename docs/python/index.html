@@ -201,6 +201,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -1495,24 +1499,69 @@
                   
   <section id="cccl-python-libraries">
 <h1>CCCL Python Libraries<a class="headerlink" href="#cccl-python-libraries" title="Link to this heading">#</a></h1>
-<p>Welcome to the CCCL Python libraries! This collection provides Pythonic interfaces to
-CUDA Core Compute Libraries (CCCL).</p>
-<p>The CCCL Python libraries consist of two main components:</p>
-<dl class="simple">
-<dt><a class="reference internal" href="compute.html"><span class="doc">cuda.compute</span></a></dt><dd><p>Parallel computing primitives for operations on entire arrays or data ranges.</p>
-</dd>
-<dt><a class="reference internal" href="coop.html"><span class="doc">cuda.coop</span></a></dt><dd><p>Block and warp-level cooperative algorithms for building custom CUDA kernels with Numba.</p>
-</dd>
-</dl>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>The CUDA Core Compute Libraries (CCCL) for Python are a collection of modules
+with the shared goal of providing <strong>high-quality, high-performance, and easy-to-use</strong>
+abstractions for CUDA Python developers.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="compute.html"><span class="doc">cuda.compute</span></a> — Composable device-level primitives for building
+custom parallel algorithms, without writing CUDA kernels directly.</p></li>
+<li><p><a class="reference internal" href="coop.html"><span class="doc">cuda.coop</span></a> — Cooperative block- and warp-level algorithms for
+writing highly efficient CUDA kernels with <a class="reference external" href="https://nvidia.github.io/numba-cuda/">Numba CUDA</a>.</p></li>
+</ul>
+<p>These libraries expose the generic, highly-optimized algorithms from the
+<a class="reference external" href="https://nvidia.github.io/cccl/cpp.html">CCCL C++ libraries</a>,
+which have been tuned to provide optimal performance across GPU architectures.</p>
+</section>
+<section id="who-is-this-for">
+<h2>Who is this for?<a class="headerlink" href="#who-is-this-for" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Library authors</strong> building parallel algorithms that need portable performance
+across GPU architectures—without dropping to CUDA C++.</p></li>
+<li><p><strong>Application developers</strong> using PyTorch, CuPy, or other GPU-accelerated frameworks
+who need custom algorithms beyond what those libraries provide.</p></li>
+</ul>
 <div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">CCCL Python Libraries</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compute.html"><code class="docutils literal notranslate"><span class="pre">cuda.compute</span></code>: Parallel Computing Primitives</a></li>
-<li class="toctree-l1"><a class="reference internal" href="coop.html"><code class="docutils literal notranslate"><span class="pre">cuda.coop</span></code>: Cooperative Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup and Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compute.html"><code class="docutils literal notranslate"><span class="pre">cuda.compute</span></code>: Parallel Computing Primitives</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="compute.html#algorithms">Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute.html#user-defined-operations">User-Defined Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute.html#iterators">Iterators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute.html#struct-types">Struct Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute.html#caching">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute.html#api-reference">API Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="coop.html"><code class="docutils literal notranslate"><span class="pre">cuda.coop</span></code>: Cooperative Algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="coop.html#example-collections">Example Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coop.html#api-reference">API Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="resources.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resources.html#cub-and-thrust-documentation">CUB and Thrust Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resources.html#asking-for-help">Asking for Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resources.html#contributing">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resources.html#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="compute_api.html"><code class="docutils literal notranslate"><span class="pre">cuda.compute</span></code> API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coop_api.html"><code class="docutils literal notranslate"><span class="pre">cuda.coop</span></code> API Reference</a></li>
+</ul>
+</li>
 </ul>
 </div>
+</section>
 </section>
 
 
@@ -1550,9 +1599,26 @@ CUDA Core Compute Libraries (CCCL).</p>
             
             
 
-<div class="bd-sidebar-secondary"></div>
+
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#who-is-this-for">Who is this for?</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
 
