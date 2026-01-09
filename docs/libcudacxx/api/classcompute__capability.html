@@ -1606,6 +1606,24 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK18compute_capability5majorEv">
 <span class="target" id="classcompute__capability_1ab45b7066cb621e87a3c916799f4980f9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">major</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK18compute_capability5majorEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Gets the major compute capability. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<em><span class="pre">Deprecated:</span></em></dt>
+<dd><p>This symbol is deprecated because it collides with major(…) macro defined in &lt;sys/sysmacros.h&gt; and will be removed in next major release. Use cc.major_cap() instead. </p>
+</dd></dl>
+
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Major compute capability.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK18compute_capability9major_capEv">
+<span class="target" id="classcompute__capability_1adcdd6fac1fc9e51646c02f3fe96e48b1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">major_cap</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK18compute_capability9major_capEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Gets the major compute capability. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Major compute capability. </p>
@@ -1616,6 +1634,24 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK18compute_capability5minorEv">
 <span class="target" id="classcompute__capability_1abc8da5799e3aa8b07dc2e8adf74f6906"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">minor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK18compute_capability5minorEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Gets the minor compute capability. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<em><span class="pre">Deprecated:</span></em></dt>
+<dd><p>This symbol is deprecated because it collides with minor(…) macro defined in &lt;sys/sysmacros.h&gt; and will be removed in next major release. Use cc.minor_cap() instead. </p>
+</dd></dl>
+
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Minor compute capability. The value is always less than 10.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK18compute_capability9minor_capEv">
+<span class="target" id="classcompute__capability_1a02c86c223ceddcb67f8e3599b84aa8d9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">minor_cap</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK18compute_capability9minor_capEv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Gets the minor compute capability. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1779,7 +1815,9 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N18compute_capabilityaSERK18compute_capability"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK18compute_capability3getEv"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK18compute_capability5majorEv"><code class="docutils literal notranslate"><span class="pre">major()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK18compute_capability9major_capEv"><code class="docutils literal notranslate"><span class="pre">major_cap()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK18compute_capability5minorEv"><code class="docutils literal notranslate"><span class="pre">minor()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK18compute_capability9minor_capEv"><code class="docutils literal notranslate"><span class="pre">minor_cap()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK18compute_capabilitycviEv"><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">int()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N18compute_capabilityeqE18compute_capability18compute_capability"><code class="docutils literal notranslate"><span class="pre">operator==</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N18compute_capabilityneE18compute_capability18compute_capability"><code class="docutils literal notranslate"><span class="pre">operator!=</span></code></a></li>
