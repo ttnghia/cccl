@@ -1523,7 +1523,11 @@
 <p><code class="docutils literal notranslate"><span class="pre">universal_ptr</span></code> has pointer semantics: it may be dereferenced safely from both hosts and devices and may be manipulated with pointer arithmetic.</p>
 <p><code class="docutils literal notranslate"><span class="pre">universal_ptr</span></code> can be created with <code class="docutils literal notranslate"><span class="pre">universal_allocator</span></code> or by explicitly calling its constructor with a raw pointer.</p>
 <p>The raw pointer encapsulated by a <code class="docutils literal notranslate"><span class="pre">universal_ptr</span></code> may be obtained by either its <code class="docutils literal notranslate"><span class="pre">get</span></code> method or the <code class="docutils literal notranslate"><span class="pre">raw_pointer_cast</span></code> free function.</p>
-<p><div class="admonition seealso">
+<p><p><div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.2.0.</span></p>
+</div>
+</p>
+ <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p>host_ptr For the documentation of the complete interface which is shared by <code class="docutils literal notranslate"><a class="reference internal" href="#group__memory__resources_1gac349015c75728ebc709912a192d2ec55"><span class="std std-ref"><span class="pre">universal_ptr</span></span></a></code>. </p>
 </div>
