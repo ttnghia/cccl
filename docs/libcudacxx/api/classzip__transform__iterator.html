@@ -1942,6 +1942,51 @@
 </dd></dl>
 
 </div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-related">Related</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnN4cudaSt5tupleIDp10_IteratorsEE">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname sig-name-template"><span class="n"><span class="pre">_Fn</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname sig-name-template"><span class="n"><span class="pre">_Iterators</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="group__iterators_1ga625a8662d416abb16aa7916692124d90"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">make_zip_transform_iterator</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><a class="reference internal" href="#_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnN4cudaSt5tupleIDp10_IteratorsEE" title="zip_transform_iterator::make_zip_transform_iterator::_Fn"><span class="n"><span class="pre">_Fn</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">__fun</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">cuda</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnN4cudaSt5tupleIDp10_IteratorsEE" title="zip_transform_iterator::make_zip_transform_iterator::_Iterators"><span class="n"><span class="pre">_Iterators</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">__t</span></span></em></dd>
+</dl>
+
+<span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">cuda</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_nothrow_move_constructible_v</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnN4cudaSt5tupleIDp10_IteratorsEE" title="zip_transform_iterator::make_zip_transform_iterator::_Fn"><span class="n"><span class="pre">_Fn</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="o"><span class="pre">&amp;&amp;</span></span><span class="w"> </span><span class="n"><span class="pre">__zip_iter_constraints</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnN4cudaSt5tupleIDp10_IteratorsEE" title="zip_transform_iterator::make_zip_transform_iterator::_Iterators"><span class="n"><span class="pre">_Iterators</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">__all_nothrow_move_constructible</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnN4cudaSt5tupleIDp10_IteratorsEE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Creates a <code class="docutils literal notranslate"><a class="reference internal" href="#classzip__transform__iterator"><span class="std std-ref"><span class="pre">zip_transform_iterator</span></span></a></code> from a tuple of iterators. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>__fun</strong> – The functor used to transform the input ranges </p></li>
+<li><p><strong>__t</strong> – The tuple of iterators to wrap </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnDp10_Iterators">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname sig-name-template"><span class="n"><span class="pre">_Fn</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname sig-name-template"><span class="n"><span class="pre">_Iterators</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="group__iterators_1gabb3ec18597acaf0f552c80ef3c2a7e26"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">make_zip_transform_iterator</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><a class="reference internal" href="#_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnDp10_Iterators" title="zip_transform_iterator::make_zip_transform_iterator::_Fn"><span class="n"><span class="pre">_Fn</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">__fun</span></span></em>,</dd>
+<dd><em class="sig-param"><a class="reference internal" href="#_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnDp10_Iterators" title="zip_transform_iterator::make_zip_transform_iterator::_Iterators"><span class="n"><span class="pre">_Iterators</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">__iters</span></span></em></dd>
+</dl>
+
+<span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">cuda</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_nothrow_move_constructible_v</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnDp10_Iterators" title="zip_transform_iterator::make_zip_transform_iterator::_Fn"><span class="n"><span class="pre">_Fn</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="o"><span class="pre">&amp;&amp;</span></span><span class="w"> </span><span class="n"><span class="pre">__zip_iter_constraints</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnDp10_Iterators" title="zip_transform_iterator::make_zip_transform_iterator::_Iterators"><span class="n"><span class="pre">_Iterators</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">__all_nothrow_move_constructible</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnDp10_Iterators" title="Link to this definition">#</a><br /></dt>
+<dd><p>Creates a <code class="docutils literal notranslate"><a class="reference internal" href="#classzip__transform__iterator"><span class="std std-ref"><span class="pre">zip_transform_iterator</span></span></a></code> from a variadic number of iterators. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>__fun</strong> – The functor used to transform the input ranges </p></li>
+<li><p><strong>__iters</strong> – The iterators to wrap </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </dd></dl>
 
 </section>
@@ -2022,6 +2067,8 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EIQN12_Constraints19__all_random_accessEEN22zip_transform_iteratorgtEbRK22zip_transform_iteratorRK22zip_transform_iterator"><code class="docutils literal notranslate"><span class="pre">operator&gt;</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EIQN12_Constraints19__all_random_accessEEN22zip_transform_iteratorleEbRK22zip_transform_iteratorRK22zip_transform_iterator"><code class="docutils literal notranslate"><span class="pre">operator&lt;=</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EIQN12_Constraints19__all_random_accessEEN22zip_transform_iteratorgeEbRK22zip_transform_iteratorRK22zip_transform_iterator"><code class="docutils literal notranslate"><span class="pre">operator&gt;=</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnN4cudaSt5tupleIDp10_IteratorsEE"><code class="docutils literal notranslate"><span class="pre">make_zip_transform_iterator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0DpEN22zip_transform_iterator27make_zip_transform_iteratorEDa3_FnDp10_Iterators"><code class="docutils literal notranslate"><span class="pre">make_zip_transform_iterator()</span></code></a></li>
 </ul>
 </li>
 </ul>
